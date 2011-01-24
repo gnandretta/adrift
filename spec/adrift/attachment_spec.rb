@@ -52,6 +52,22 @@ module Adrift
         attachment.default_url = '/images/:class_name/missing.png'
         attachment.url.should == '/images/users/missing.png'
       end
+
+      it "accepts a style" do
+        attachment.default_url = '/images/:class_name/missing_:style.png'
+        attachment.url(:small).should == '/images/users/missing_small.png'
+      end
+
+      it "uses a default style if there isn't one" do
+        attachment.default_style = :normal
+        attachment.default_url = '/images/:class_name/missing_:style.png'
+        attachment.url.should == '/images/users/missing_normal.png'
+      end
+
+      it "assumes an ':original' default style" do
+        attachment.default_url = '/images/:class_name/missing_:style.png'
+        attachment.url.should == '/images/users/missing_original.png'
+      end
     end
 
     describe "#path" do
@@ -81,6 +97,22 @@ module Adrift
       it "builds its url from a pattern if there's one" do
         attachment.url = '/:class_name/:id/:attachment/:filename'
         attachment.url.should == '/users/1/avatars/me.png'
+      end
+
+      it "accepts a style" do
+        attachment.url = '/:class_name/:id/:attachment/:style/:filename'
+        attachment.url(:small).should == '/users/1/avatars/small/me.png'
+      end
+
+      it "uses a default style if there isn't one" do
+        attachment.default_style = :normal
+        attachment.url = '/:class_name/:id/:attachment/:style/:filename'
+        attachment.url.should == '/users/1/avatars/normal/me.png'
+      end
+
+      it "assumes an ':original' default style" do
+        attachment.url = '/:class_name/:id/:attachment/:style/:filename'
+        attachment.url.should == '/users/1/avatars/original/me.png'
       end
     end
 

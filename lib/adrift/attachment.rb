@@ -1,17 +1,19 @@
 module Adrift
   class Attachment
-    attr_writer :default_url, :url, :path
-    attr_reader :name, :model
+    attr_accessor :default_style
+    attr_writer   :default_url, :url, :path
+    attr_reader   :name, :model
 
     def initialize(name, model)
       @name, @model = name, model
-      @default_url = '/images/missing.png'
-      @url         = '/system/attachments/:class_name/:id/:attachment/:filename'
-      @path        = './public:url'
+      @default_style = :original
+      @default_url   = '/images/missing.png'
+      @url           = '/system/attachments/:class_name/:id/:attachment/:filename'
+      @path          = './public:url'
     end
 
-    def url
-      specialize(empty? ? @default_url : @url)
+    def url(style=default_style)
+      specialize(empty? ? @default_url : @url, style)
     end
 
     def path
@@ -28,8 +30,8 @@ module Adrift
 
   private
 
-    def specialize(str)
-      Pattern.new(str).specialize(:attachment => self)
+    def specialize(str, style=default_style)
+      Pattern.new(str).specialize(:attachment => self, :style => style)
     end
   end
 end
