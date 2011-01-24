@@ -15,7 +15,7 @@ module Adrift
   end
 
   describe Attachment, "instantiation" do
-    let(:user) { double('user', :avatar_filename => nil) }
+    let(:user) { user_double }
     let(:attachment) { Attachment.new(:avatar, user) }
 
     describe "#name" do
@@ -32,7 +32,7 @@ module Adrift
   end
 
   describe Attachment, "when is empty" do
-    let(:user) { double('user', :avatar_filename => nil) }
+    let(:user) { user_double(:avatar_filename => nil) }
     let(:attachment) { Attachment.new(:avatar, user) }
 
     it_behaves_like "any attachment"
@@ -57,7 +57,7 @@ module Adrift
   end
 
   describe Attachment, "when isn't empty" do
-    let(:user) { double('user', :avatar_filename => 'me.png') }
+    let(:user) { user_double(:id => 1, :avatar_filename => 'me.png') }
     let(:attachment) { Attachment.new(:avatar, user) }
 
     it_behaves_like "any attachment"
