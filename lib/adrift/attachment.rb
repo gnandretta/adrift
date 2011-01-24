@@ -14,7 +14,11 @@ module Adrift
     end
 
     def empty?
-      model.public_send("#{name}_filename").nil?
+      filename.nil?
+    end
+
+    def filename
+      model.public_send("#{name}_filename")
     end
   end
 end
