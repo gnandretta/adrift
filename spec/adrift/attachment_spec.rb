@@ -1,7 +1,20 @@
 require 'spec_helper'
 
 module Adrift
-  describe Attachment do
+  shared_examples_for "any attachment" do
+    describe "#empty?" do
+      context "when a file has been assigned" do
+        it "returns true" do
+          pending do
+            attachment.assign(double('up file'))
+            attachment.should_not be_empty
+          end
+        end
+      end
+    end
+  end
+
+  describe Attachment, "instantiation" do
     let(:user) { double('user', :avatar_filename => nil) }
     let(:attachment) { Attachment.new(:avatar, user) }
 
@@ -16,28 +29,30 @@ module Adrift
         attachment.model.should == user
       end
     end
+  end
+
+  describe Attachment, "when is empty" do
+    let(:user) { double('user', :avatar_filename => nil) }
+    let(:attachment) { Attachment.new(:avatar, user) }
+
+    it_behaves_like "any attachment"
 
     describe "#empty?" do
-      context "when a file hasn't been attached" do
-        it "returns true" do
-          attachment.should be_empty
-        end
+      it "returns true" do
+        attachment.should be_empty
       end
+    end
+  end
 
-      context "when a file has been attached" do
-        it "returns false" do
-          user.stub(:avatar_filename => 'me.png')
-          attachment.should_not be_empty
-        end
+  describe Attachment, "when isn't empty" do
+    let(:user) { double('user', :avatar_filename => 'me.png') }
+    let(:attachment) { Attachment.new(:avatar, user) }
 
-        context "when a file has been assigned" do
-          it "returns true" do
-            pending do
-              attachment.assign(double('up file'))
-              attachment.should_not be_empty
-            end
-          end
-        end
+    it_behaves_like "any attachment"
+
+    describe "#empty?" do
+      it "returns false" do
+        attachment.should_not be_empty
       end
     end
   end
