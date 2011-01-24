@@ -67,5 +67,28 @@ module Adrift
         attachment.should_not be_empty
       end
     end
+
+    describe "#url" do
+      it "builds its url from a default pattern" do
+        attachment.url.should == '/system/attachments/users/1/avatars/me.png'
+      end
+
+      it "builds its url from a pattern if there's one" do
+        attachment.url = '/:class_name/:id/:attachment/:filename'
+        attachment.url.should == '/users/1/avatars/me.png'
+      end
+    end
+
+    describe "#path" do
+      it "builds its path from the url by default" do
+        attachment.stub(:url => '/users/1/avatars/me.png')
+        attachment.path.should == './public/users/1/avatars/me.png'
+      end
+
+      it "builds its path from a pattern if there's one" do
+        attachment.path = './:class_name/:id/:attachment/:filename'
+        attachment.path.should == './users/1/avatars/me.png'
+      end
+    end
   end
 end
