@@ -1,16 +1,17 @@
 module Adrift
   class Attachment
-    attr_writer :url, :path
+    attr_writer :default_url, :url, :path
     attr_reader :name, :model
 
     def initialize(name, model)
       @name, @model = name, model
-      @url  = '/system/attachments/:class_name/:id/:attachment/:filename'
-      @path = './public:url'
+      @default_url = '/images/missing.png'
+      @url         = '/system/attachments/:class_name/:id/:attachment/:filename'
+      @path        = './public:url'
     end
 
     def url
-      empty? ? '/images/missing.png' : specialize(@url)
+      specialize(empty? ? @default_url : @url)
     end
 
     def path

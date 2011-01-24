@@ -47,6 +47,11 @@ module Adrift
       it "returns a default url" do
         attachment.url.should == '/images/missing.png'
       end
+
+      it "builds the default url from a pattern if there's one" do
+        attachment.default_url = '/images/:class_name/missing.png'
+        attachment.url.should == '/images/users/missing.png'
+      end
     end
 
     describe "#path" do
