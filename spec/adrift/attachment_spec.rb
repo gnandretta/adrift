@@ -74,6 +74,10 @@ module Adrift
       it "returns nil" do
         attachment.path.should be_nil
       end
+
+      it "accepts a style" do
+        attachment.path(:small).should be_nil
+      end
     end
   end
 
@@ -125,6 +129,22 @@ module Adrift
       it "builds its path from a pattern if there's one" do
         attachment.path = './:class_name/:id/:attachment/:filename'
         attachment.path.should == './users/1/avatars/me.png'
+      end
+
+      it "accepts a style" do
+        attachment.path = './:class_name/:id/:attachment/:style/:filename'
+        attachment.path(:small).should == './users/1/avatars/small/me.png'
+      end
+
+      it "uses a default style if there isn't one" do
+        attachment.default_style = :normal
+        attachment.path = './:class_name/:id/:attachment/:style/:filename'
+        attachment.path.should == './users/1/avatars/normal/me.png'
+      end
+
+      it "assumes an ':original' default style" do
+        attachment.path = './:class_name/:id/:attachment/:style/:filename'
+        attachment.path.should == './users/1/avatars/original/me.png'
       end
     end
   end

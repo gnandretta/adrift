@@ -16,8 +16,8 @@ module Adrift
       specialize(empty? ? @default_url : @url, style)
     end
 
-    def path
-      specialize(@path) unless empty?
+    def path(style=default_style)
+      specialize(@path, style) unless empty?
     end
 
     def empty?
@@ -30,7 +30,7 @@ module Adrift
 
   private
 
-    def specialize(str, style=default_style)
+    def specialize(str, style)
       Pattern.new(str).specialize(:attachment => self, :style => style)
     end
   end
