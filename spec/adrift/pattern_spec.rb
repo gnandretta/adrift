@@ -102,6 +102,22 @@ module Adrift
       end
     end
 
+    describe Style do
+      let(:tag) { Style.new }
+
+      describe "#label" do
+        it "returns ':style'" do
+          tag.label.should == ':style'
+        end
+      end
+
+      describe "#specialize" do
+        it "returns the given style" do
+          tag.specialize(:style => :normal).should == 'normal'
+        end
+      end
+    end
+
     describe Url do
       let(:tag) { Url.new }
 

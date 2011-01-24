@@ -38,6 +38,17 @@ module Adrift
       end
       Pattern.tags << Attachment.new
 
+      class Style
+        def label
+          ':style'
+        end
+
+        def specialize(options={})
+          options[:style].to_s
+        end
+      end
+      Pattern.tags << Style.new
+
       class Url
         def label
           ':url'
