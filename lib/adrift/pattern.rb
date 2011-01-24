@@ -2,10 +2,8 @@ require 'active_support/inflector'
 
 module Adrift
   class Pattern
-    class << self
-      def tags
-        @tags ||= []
-      end
+    def self.tags
+      @tags ||= []
     end
 
     attr_reader :str
