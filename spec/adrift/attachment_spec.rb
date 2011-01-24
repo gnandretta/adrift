@@ -42,6 +42,18 @@ module Adrift
         attachment.should be_empty
       end
     end
+
+    describe "#url" do
+      it "returns a default url" do
+        attachment.url.should == '/images/missing.png'
+      end
+    end
+
+    describe "#path" do
+      it "returns nil" do
+        attachment.path.should be_nil
+      end
+    end
   end
 
   describe Attachment, "when isn't empty" do
