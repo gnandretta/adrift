@@ -20,15 +20,23 @@ module Adrift
       specialize(@path, style) unless empty?
     end
 
+    def assign(up_file)
+      model_send(:filename=, up_file.original_filename.to_s.tr('^a-zA-Z0-9.', '_'))
+    end
+
     def empty?
       filename.nil?
     end
 
     def filename
-      model.public_send("#{name}_filename")
+      model_send(:filename)
     end
 
   private
+
+    def model_send(message_without_prefix, *args)
+      model.public_send("#{name}_#{message_without_prefix}", *args)
+    end
 
     def specialize(str, style)
       Pattern.new(str).specialize(:attachment => self, :style => style)

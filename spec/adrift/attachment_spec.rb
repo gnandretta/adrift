@@ -12,6 +12,22 @@ module Adrift
         end
       end
     end
+
+    describe "#assign" do
+      let(:up_file) { double('up file') }
+
+      it "updates the attachment's filename in the model" do
+        up_file.stub(:original_filename => 'new_me.png')
+        attachment.assign(up_file)
+        user.avatar_filename.should == 'new_me.png'
+      end
+
+      it "replaces the filename's non alphanumeric characters with '_' (except '.')" do
+        up_file.stub(:original_filename => 'my awesome-avatar!.png')
+        attachment.assign(up_file)
+        attachment.filename.should == 'my_awesome_avatar_.png'
+      end
+    end
   end
 
   describe Attachment, "instantiation" do
