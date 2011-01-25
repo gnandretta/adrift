@@ -36,6 +36,10 @@ class << FileUtils
   def rm(*) end
 end
 
+module Kernel
+  def `(*) end
+end
+
 RSpec.configure do |c|
   c.include Adrift::Spec::Helpers
 end
