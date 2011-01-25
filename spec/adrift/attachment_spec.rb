@@ -5,10 +5,8 @@ module Adrift
     describe "#empty?" do
       context "when a file has been assigned" do
         it "returns true" do
-          pending do
-            attachment.assign(double('up file'))
-            attachment.should_not be_empty
-          end
+          attachment.assign(double('up file', :original_filename => 'new_me.png'))
+          attachment.should_not be_empty
         end
       end
     end
