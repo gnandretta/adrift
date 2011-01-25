@@ -3,11 +3,22 @@ require 'adrift'
 module Adrift
   module Spec
     module Helpers
-      def user_double(stubs={})
-        default_stubs = { :id => 1, :avatar_filename => 'me.png' }
-        user = double('user', default_stubs.merge(stubs))
-        user.stub_chain(:class, :name).and_return('User')
-        user
+      def user_double_class
+        @user_class ||= Class.new do
+          attr_accessor :id, :avatar_filename
+
+          def update_attributes(attrs)
+            attrs.each { |name, value| send "#{name}=", value }
+          end
+
+          def self.name
+            'User'
+          end
+        end
+      end
+
+      def user_double(attrs={})
+        user_double_class.new.tap { |user| user.update_attributes(attrs) }
       end
     end
   end
