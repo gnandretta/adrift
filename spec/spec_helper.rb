@@ -29,6 +29,13 @@ module Adrift
   end
 end
 
+class << FileUtils
+  def chmod(*) end
+  def mkdir_p(*) end
+  def mv(*) end
+  def rm(*) end
+end
+
 RSpec.configure do |c|
   c.include Adrift::Spec::Helpers
 end
