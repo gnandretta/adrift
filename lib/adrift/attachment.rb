@@ -12,6 +12,10 @@ module Adrift
       @path          = './public:url'
     end
 
+    def dirty?
+      !@up_file.nil?
+    end
+
     def url(style=default_style)
       specialize(empty? ? @default_url : @url, style)
     end
@@ -22,6 +26,11 @@ module Adrift
 
     def assign(up_file)
       model_send(:filename=, up_file.original_filename.to_s.tr('^a-zA-Z0-9.', '_'))
+      @up_file = up_file
+    end
+
+    def save
+      @up_file = nil
     end
 
     def empty?

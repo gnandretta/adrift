@@ -2,6 +2,29 @@ require 'spec_helper'
 
 module Adrift
   shared_examples_for "any attachment" do
+    describe "#dirty?" do
+      context "for a newly instantiated attachment" do
+        it "returns false" do
+          attachment.should_not be_dirty
+        end
+      end
+
+      context "when a file has been assigned" do
+        before { attachment.assign(up_file_double) }
+
+        it "returns true" do
+          attachment.should be_dirty
+        end
+
+        context "and the attachment is saved" do
+          it "returns false" do
+            attachment.save
+            attachment.should_not be_dirty
+          end
+        end
+      end
+    end
+
     describe "#empty?" do
       context "when a file has been assigned" do
         it "returns true" do
