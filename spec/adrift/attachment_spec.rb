@@ -5,14 +5,14 @@ module Adrift
     describe "#empty?" do
       context "when a file has been assigned" do
         it "returns true" do
-          attachment.assign(double('up file', :original_filename => 'new_me.png'))
+          attachment.assign(up_file_double)
           attachment.should_not be_empty
         end
       end
     end
 
     describe "#assign" do
-      let(:up_file) { double('up file') }
+      let(:up_file) { up_file_double }
 
       it "updates the attachment's filename in the model" do
         up_file.stub(:original_filename => 'new_me.png')

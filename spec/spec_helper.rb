@@ -20,6 +20,11 @@ module Adrift
       def user_double(attrs={})
         user_double_class.new.tap { |user| user.update_attributes(attrs) }
       end
+
+      def up_file_double(stubs={})
+        default_stubs = { :original_filename => 'new_me.png', :path => '/tmp/213' }
+        double('up file', default_stubs.merge(stubs))
+      end
     end
   end
 end
