@@ -1,15 +1,18 @@
 module Adrift
   class Attachment
-    attr_accessor :default_style
+    attr_accessor :default_style, :styles, :storage, :processor
     attr_writer   :default_url, :url, :path
     attr_reader   :name, :model
 
     def initialize(name, model)
       @name, @model = name, model
       @default_style = :original
+      @styles        = {}
       @default_url   = '/images/missing.png'
       @url           = '/system/attachments/:class_name/:id/:attachment/:filename'
       @path          = './public:url'
+      @storage       = Storage::Filesystem.new
+      @processor     = Processor::Convert.new
     end
 
     def dirty?
@@ -25,11 +28,15 @@ module Adrift
     end
 
     def assign(up_file)
+      enqueue_files_for_removal unless empty? || dirty?
       model_send(:filename=, up_file.original_filename.to_s.tr('^a-zA-Z0-9.', '_'))
       @up_file = up_file
     end
 
     def save
+      return unless dirty?
+      enqueue_files_for_storage
+      storage.flush
       @up_file = nil
     end
 
@@ -49,6 +56,23 @@ module Adrift
 
     def specialize(str, style)
       Pattern.new(str).specialize(:attachment => self, :style => style)
+    end
+
+    def enqueue_files_for_removal
+      files = styles.map { |name, definition| path(name) }
+      files << path(:original) unless styles.has_key?(:original)
+      files.each { |path| storage.remove(path) }
+    end
+
+    def enqueue_files_for_storage
+      files_for_storage.each { |style, path| storage.store(path, path(style)) }
+    end
+
+    def files_for_storage
+      processor.process(@up_file.path, styles)
+      processor.processed_files.dup.tap do |files|
+        files[:original] ||= @up_file.path
+      end
     end
   end
 end

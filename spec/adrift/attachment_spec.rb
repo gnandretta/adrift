@@ -49,6 +49,81 @@ module Adrift
         attachment.filename.should == 'my_awesome_avatar_.png'
       end
     end
+
+    describe "#save" do
+      context "when a file hasn't been assigned" do
+        it "doesn't remove or store anything" do
+          attachment.storage.should_not_receive(:store)
+          attachment.storage.should_not_receive(:remove)
+          attachment.storage.should_not_receive(:flush)
+          attachment.save
+        end
+
+        it "doesn't proccess anything" do
+          attachment.processor.should_not_receive(:process)
+          attachment.save
+        end
+      end
+
+      context "when a file has been assigned" do
+        before do
+          attachment.styles = { :normal => '100x100', :small => '50x50' }
+          attachment.path = '/:class_name/:id/:style/:filename'
+          attachment.assign up_file_double(:original_filename => 'new_me.png', :path => '/tmp/123')
+        end
+
+        it "process the assigned file" do
+          attachment.processor.should_receive(:process).with('/tmp/123', attachment.styles)
+          attachment.save
+        end
+
+        it "stores the assigned file and the processed ones" do
+          attachment.save
+          attachment.storage.stored.should include(['/tmp/123', '/users/1/original/new_me.png'])
+          attachment.storage.stored.should include(['/tmp/normal-123', '/users/1/normal/new_me.png'])
+          attachment.storage.stored.should include(['/tmp/small-123', '/users/1/small/new_me.png'])
+          attachment.storage.stored.size.should == 3
+        end
+
+        context "when an ':original' style has been set" do
+          before do
+            attachment.styles[:original] = '500x500'
+            attachment.save
+          end
+
+          it "doesn't store the uploaded file" do
+            attachment.storage.stored.should_not include(['/tmp/123', '/users/1/original/new_me.png'])
+          end
+
+          it "stores the processed one" do
+            attachment.storage.stored.should include(['/tmp/original-123', '/users/1/original/new_me.png'])
+          end
+        end
+      end
+
+      context "when two files has been asigned without saving" do
+        before do
+          attachment.styles = { :normal => '100x100', :small => '50x50' }
+          attachment.path = '/:class_name/:id/:style/:filename'
+          attachment.assign up_file_double(:original_filename => 'first_me.png', :path => '/tmp/123')
+          attachment.assign up_file_double(:original_filename => 'second_me.png', :path => '/tmp/456')
+          attachment.save
+        end
+
+        it "stores and process only the second assigned file" do
+          attachment.storage.stored.should include(['/tmp/456', '/users/1/original/second_me.png'])
+          attachment.storage.stored.should include(['/tmp/normal-456', '/users/1/normal/second_me.png'])
+          attachment.storage.stored.should include(['/tmp/small-456', '/users/1/small/second_me.png'])
+          attachment.storage.stored.size.should == 3
+        end
+
+        it "doesn't try to remove the first assigned file" do
+          attachment.storage.removed.should_not include('/users/1/original/first_me.png')
+          attachment.storage.removed.should_not include('/users/1/normal/first_me.png')
+          attachment.storage.removed.should_not include('/users/1/small/first_me.png')
+        end
+      end
+    end
   end
 
   describe Attachment, "instantiation" do
@@ -69,7 +144,7 @@ module Adrift
   end
 
   describe Attachment, "when is empty" do
-    let(:user) { user_double(:avatar_filename => nil) }
+    let(:user) { user_double(:id => 1, :avatar_filename => nil) }
     let(:attachment) { Attachment.new(:avatar, user) }
 
     it_behaves_like "any attachment"
@@ -114,6 +189,19 @@ module Adrift
 
       it "accepts a style" do
         attachment.path(:small).should be_nil
+      end
+    end
+
+    describe "#save" do
+      context "when a file has been assigned" do
+        before do
+          attachment.assign(up_file_double)
+          attachment.save
+        end
+
+        it "doesn't remove anything" do
+          attachment.storage.removed.should be_empty
+        end
       end
     end
   end
@@ -182,6 +270,23 @@ module Adrift
       it "assumes an ':original' default style" do
         attachment.path = './:class_name/:id/:attachment/:style/:filename'
         attachment.path.should == './users/1/avatars/original/me.png'
+      end
+    end
+
+    describe "#save" do
+      context "when a file has been assigned" do
+        before do
+          attachment.styles = { :normal => '100x100', :small => '50x50' }
+          attachment.path = '/:class_name/:id/:style/:filename'
+          attachment.assign up_file_double(:original_filename => 'new_me.png', :path => '/tmp/123')
+          attachment.save
+        end
+
+        it "removes the previous files for each style" do
+          attachment.storage.removed.should include('/users/1/original/me.png')
+          attachment.storage.removed.should include('/users/1/normal/me.png')
+          attachment.storage.removed.should include('/users/1/small/me.png')
+        end
       end
     end
   end
