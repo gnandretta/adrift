@@ -220,6 +220,13 @@ module Adrift
         default_style_option.should_not be_nil
         attachment.default_style.should == default_style_option
       end
+
+      it "allows to provide custom options" do
+        styles = { :small => '50x50', :normal => '100x100' }
+        Attachment.default_options[:styles].should_not == styles
+        attachment = Attachment.new(:avatar, user, :styles => styles)
+        attachment.styles.should == styles
+      end
     end
   end
 

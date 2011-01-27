@@ -16,8 +16,8 @@ module Adrift
       }
     end
 
-    def initialize(name, model)
-      self.class.default_options.each do |name, value|
+    def initialize(name, model, options={})
+      self.class.default_options.merge(options).each do |name, value|
         send "#{name}=", value
       end
       @name, @model = name, model
