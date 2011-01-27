@@ -66,13 +66,11 @@ module Adrift
     end
 
     def enqueue_files_for_removal
-      files = styles.map { |name, definition| path(name) }
-      files << path(:original) unless styles.has_key?(:original)
-      files.each { |path| storage.remove(path) }
+      [:original, *styles.keys].uniq.each { |style| storage.remove path(style) }
     end
 
     def enqueue_files_for_storage
-      files_for_storage.each { |style, path| storage.store(path, path(style)) }
+      files_for_storage.each { |style, file| storage.store(file, path(style)) }
     end
 
     def files_for_storage
