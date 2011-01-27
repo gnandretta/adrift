@@ -1,18 +1,28 @@
 module Adrift
   class Attachment
-    attr_accessor :default_style, :styles, :storage, :processor
+    attr_accessor :default_style, :styles, :storage, :processor, :storage_class, :processor_class
     attr_writer   :default_url, :url, :path
     attr_reader   :name, :model
 
+    def self.default_options
+      @default_options ||= {
+        :default_style   => :original,
+        :styles          => {},
+        :default_url     => '/images/missing.png',
+        :url             => '/system/attachments/:class_name/:id/:attachment/:filename',
+        :path            => './public:url',
+        :storage_class   => Storage::Filesystem,
+        :processor_class => Processor::Convert
+      }
+    end
+
     def initialize(name, model)
+      self.class.default_options.each do |name, value|
+        send "#{name}=", value
+      end
       @name, @model = name, model
-      @default_style = :original
-      @styles        = {}
-      @default_url   = '/images/missing.png'
-      @url           = '/system/attachments/:class_name/:id/:attachment/:filename'
-      @path          = './public:url'
-      @storage       = Storage::Filesystem.new
-      @processor     = Processor::Convert.new
+      @storage      = storage_class.new
+      @processor    = processor_class.new
     end
 
     def dirty?

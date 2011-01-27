@@ -163,6 +163,47 @@ module Adrift
     end
   end
 
+  describe Attachment do
+    describe ".default_options" do
+      let(:default_options) { Attachment.default_options }
+
+      it "has a default style" do
+        default_options.should have_key(:default_style)
+        default_options[:default_style].should == :original
+      end
+
+      it "doesn't have any styles defined" do
+        default_options.should have_key(:styles)
+        default_options[:styles].should == {}
+      end
+
+      it "has a default url for empty attachments" do
+        default_options.should have_key(:default_url)
+        default_options[:default_url].should == '/images/missing.png'
+      end
+
+      it "has a url pattern for non empty attachments" do
+        default_options.should have_key(:url)
+        default_options[:url].should == '/system/attachments/:class_name/:id/:attachment/:filename'
+      end
+
+      it "has a path pattern for non empty attachments" do
+        default_options.should have_key(:path)
+        default_options[:path].should == './public:url'
+      end
+
+      it "has a class to build the attachment's storage" do
+        default_options.should have_key(:storage_class)
+        default_options[:storage_class].should == Storage::Filesystem
+      end
+
+      it "has a class to build the attachment's processor" do
+        default_options.should have_key(:processor_class)
+        default_options[:processor_class].should == Processor::Convert
+      end
+    end
+  end
+
   describe Attachment, "instantiation" do
     let(:user) { user_double }
     let(:attachment) { Attachment.new(:avatar, user) }
