@@ -40,6 +40,13 @@ module Adrift
       @up_file = nil
     end
 
+    def destroy
+      return if empty?
+      enqueue_files_for_removal unless dirty?
+      storage.flush
+      model_send(:filename=, nil)
+    end
+
     def empty?
       filename.nil?
     end

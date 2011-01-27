@@ -123,6 +123,43 @@ module Adrift
           attachment.storage.removed.should_not include('/users/1/small/first_me.png')
         end
       end
+
+      describe "#destroy" do
+        context "when a file hasn't been assigned" do
+          before { attachment.destroy }
+
+          it "doesn't store anything" do
+            attachment.storage.stored.should be_empty
+          end
+
+          it "sets to nil the attachment filename in the model" do
+            user.avatar_filename.should be_nil
+          end
+        end
+
+        context "when a file has been assigned" do
+          before do
+            attachment.styles = { :normal => '100x100', :small => '50x50' }
+            attachment.path = '/:class_name/:id/:style/:filename'
+            attachment.assign up_file_double(:original_filename => 'new_me.png', :path => '/tmp/123')
+            attachment.destroy
+          end
+
+          it "doesn't remove the assigned file nor its processed files" do
+            attachment.storage.removed.should_not include('/users/1/original/new_me.png')
+            attachment.storage.removed.should_not include('/users/1/normal/new_me.png')
+            attachment.storage.removed.should_not include('/users/1/small/new_me.png')
+          end
+
+          it "doesn't store anything" do
+            attachment.storage.stored.should be_empty
+          end
+
+          it "sets to nil the attachment filename in the model" do
+            user.avatar_filename.should be_nil
+          end
+        end
+      end
     end
   end
 
@@ -202,6 +239,13 @@ module Adrift
         it "doesn't remove anything" do
           attachment.storage.removed.should be_empty
         end
+      end
+    end
+
+    describe "#destroy" do
+      it "doesn't remove anything" do
+        attachment.destroy
+        attachment.storage.removed.should be_empty
       end
     end
   end
@@ -286,6 +330,39 @@ module Adrift
           attachment.storage.removed.should include('/users/1/original/me.png')
           attachment.storage.removed.should include('/users/1/normal/me.png')
           attachment.storage.removed.should include('/users/1/small/me.png')
+        end
+      end
+    end
+
+    describe "#destroy" do
+      context "when a file hasn't been assigned" do
+        before do
+          attachment.styles = { :normal => '100x100', :small => '50x50' }
+          attachment.path = '/:class_name/:id/:style/:filename'
+          attachment.destroy
+        end
+
+        it "removes the files for each style" do
+          attachment.storage.removed.should include('/users/1/original/me.png')
+          attachment.storage.removed.should include('/users/1/normal/me.png')
+          attachment.storage.removed.should include('/users/1/small/me.png')
+          attachment.storage.removed.size.should == 3
+        end
+      end
+
+      context "when a file has been assigned" do
+        before do
+          attachment.styles = { :normal => '100x100', :small => '50x50' }
+          attachment.path = '/:class_name/:id/:style/:filename'
+          attachment.assign up_file_double(:original_filename => 'new_me.png', :path => '/tmp/123')
+          attachment.destroy
+        end
+
+        it "removes the files for every style" do
+          attachment.storage.removed.should include('/users/1/original/me.png')
+          attachment.storage.removed.should include('/users/1/normal/me.png')
+          attachment.storage.removed.should include('/users/1/small/me.png')
+          attachment.storage.removed.size.should == 3
         end
       end
     end
