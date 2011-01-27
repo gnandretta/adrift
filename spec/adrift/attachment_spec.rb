@@ -214,6 +214,12 @@ module Adrift
       it "sets the model to which the attachment belongs" do
         attachment.model.should == user
       end
+
+      it "uses the default attachment options" do
+        default_style_option = Attachment.default_options[:default_style]
+        default_style_option.should_not be_nil
+        attachment.default_style.should == default_style_option
+      end
     end
   end
 
