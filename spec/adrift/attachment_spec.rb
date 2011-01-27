@@ -202,20 +202,16 @@ module Adrift
         default_options[:processor_class].should == Processor::Convert
       end
     end
-  end
 
-  describe Attachment, "instantiation" do
-    let(:user) { user_double }
-    let(:attachment) { Attachment.new(:avatar, user) }
+    describe ".new" do
+      let(:user) { user_double }
+      let(:attachment) { Attachment.new(:avatar, user) }
 
-    describe "#name" do
-      it "returns the attachment's name" do
+      it "sets the attachment's name" do
         attachment.name.should == :avatar
       end
-    end
 
-    describe "#model" do
-      it "returns the model to which the attachment belongs" do
+      it "sets the model to which the attachment belongs" do
         attachment.model.should == user
       end
     end
