@@ -189,7 +189,7 @@ module Adrift
 
       it "has a path pattern for non empty attachments" do
         default_options.should have_key(:path)
-        default_options[:path].should == './public:url'
+        default_options[:path].should == ':root/public:url'
       end
 
       it "has a class to build the attachment's storage" do

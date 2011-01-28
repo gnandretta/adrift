@@ -19,7 +19,7 @@ module Adrift
         :styles          => {},
         :default_url     => '/images/missing.png',
         :url             => '/system/attachments/:class_name/:id/:attachment/:filename',
-        :path            => './public:url',
+        :path            => ':root/public:url',
         :storage_class   => Storage::Filesystem,
         :processor_class => Processor::Convert
       }
