@@ -71,6 +71,16 @@ module Adrift
         end
       end
 
+      context "when there are two tags with the exactly same label" do
+        it "uses the most recently registered" do
+          repeated_tag = double('class tag 2', :label => ':class', :specialize => 'repeated')
+          repeated_tag.specialize.should_not == class_tag.specialize
+          Pattern.tags << class_tag
+          Pattern.tags << repeated_tag
+          Pattern.new(':class').specialize.should == 'repeated'
+        end
+      end
+
       it "only asks the tags that appears in the pattern for its specializations" do
         Pattern.tags << class_tag
         Pattern.tags << class_name_tag
