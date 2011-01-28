@@ -219,6 +219,22 @@ module Adrift
       end
     end
 
+    describe Root do
+      let(:tag) { Root.new }
+
+      describe "#label" do
+        it "returns ':root'" do
+          tag.label.should == ':root'
+        end
+      end
+
+      describe "#specialize" do
+        it "returns '.'" do
+          tag.specialize.should == '.'
+        end
+      end
+    end
+
     describe Filename do
       let(:tag) { Filename.new }
 

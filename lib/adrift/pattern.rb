@@ -91,6 +91,17 @@ module Adrift
       end
       Pattern.tags << Id.new
 
+      class Root
+        def label
+          ':root'
+        end
+
+        def specialize(options={})
+          '.'
+        end
+      end
+      Pattern.tags << Root.new
+
       class Filename
         def label
           ':filename'
