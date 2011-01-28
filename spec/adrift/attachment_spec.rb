@@ -203,6 +203,16 @@ module Adrift
       end
     end
 
+    describe ".reset_default_options" do
+      it "revert changes made to the default options" do
+        original_value = Attachment.default_options[:url]
+        Attachment.default_options[:url] = '/:filename'
+        Attachment.default_options[:url].should_not == original_value
+        Attachment.reset_default_options
+        Attachment.default_options[:url].should == original_value
+      end
+    end
+
     describe ".new" do
       let(:user) { user_double }
       let(:attachment) { Attachment.new(:avatar, user) }
@@ -226,6 +236,17 @@ module Adrift
         Attachment.default_options[:styles].should_not == styles
         attachment = Attachment.new(:avatar, user, :styles => styles)
         attachment.styles.should == styles
+      end
+    end
+
+    describe ".config" do
+      after { Attachment.reset_default_options }
+
+      it "changes the default attachment options" do
+        default_url = '/missing.png'
+        Attachment.default_options[:default_url].should_not == default_url
+        Attachment.config { |c| c.default_url default_url }
+        Attachment.default_options[:default_url].should == default_url
       end
     end
   end

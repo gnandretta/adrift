@@ -4,6 +4,15 @@ module Adrift
     attr_writer   :default_url, :url, :path
     attr_reader   :name, :model
 
+    def self.config
+      config = BasicObject.new
+      def config.method_missing(m, *args)
+        options = Attachment.default_options
+        options[m] = args.first if options.has_key?(m)
+      end
+      yield(config)
+    end
+
     def self.default_options
       @default_options ||= {
         :default_style   => :original,
@@ -14,6 +23,10 @@ module Adrift
         :storage_class   => Storage::Filesystem,
         :processor_class => Processor::Convert
       }
+    end
+
+    def self.reset_default_options
+      @default_options = nil
     end
 
     def initialize(name, model, options={})
