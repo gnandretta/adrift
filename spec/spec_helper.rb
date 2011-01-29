@@ -31,8 +31,8 @@ end
 
 class << FileUtils
   def chmod(*) end
+  def cp(*) end
   def mkdir_p(*) end
-  def mv(*) end
   def rm(*) end
 end
 

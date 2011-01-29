@@ -21,7 +21,7 @@ module Adrift
       def store!
         @queue_for_storage.each do |source_path, destination_path|
           FileUtils.mkdir_p(File.dirname(destination_path))
-          FileUtils.mv(source_path, destination_path)
+          FileUtils.cp(source_path, destination_path)
           FileUtils.chmod(0644, destination_path)
         end
         @stored = @queue_for_storage.dup

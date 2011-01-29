@@ -147,8 +147,8 @@ module Adrift::Storage
         end
 
         it "moves the specified files to their destination path" do
-          FileUtils.should_receive(:mv).with('/tmp/1', '/path/to/storage/1/file')
-          FileUtils.should_receive(:mv).with('/tmp/2', '/path/to/storage/2/file')
+          FileUtils.should_receive(:cp).with('/tmp/1', '/path/to/storage/1/file')
+          FileUtils.should_receive(:cp).with('/tmp/2', '/path/to/storage/2/file')
           storage.store!
         end
 
@@ -163,7 +163,7 @@ module Adrift::Storage
         it "creates its directory, then moves it there and then sets its permissions" do
           storage.store('/tmp/1', '/path/to/storage/1/file')
           FileUtils.should_receive(:mkdir_p).ordered
-          FileUtils.should_receive(:mv).ordered
+          FileUtils.should_receive(:cp).ordered
           FileUtils.should_receive(:chmod).ordered
           storage.store!
         end
