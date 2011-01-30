@@ -2,44 +2,60 @@ require 'spec_helper'
 
 module Adrift
   describe UpFile do
-    shared_examples_for "any up file" do
-      let(:tempfile) { double('tempfile', :path => '/tmp/123') }
-      let(:original_filename) { 'me.png' }
+    context "within a rails application" do
       let(:up_file) { UpFile.new(up_file_representation) }
+      let(:up_file_representation) do
+        double('uploaded file', {
+          :original_filename => 'me.png',
+          :tempfile => double('tempfile', :path => '/tmp/123')
+        })
+      end
 
       describe "#original_filename" do
         it "returns the original filename of the uploaded file" do
-          up_file.original_filename.should == 'me.png'
+          up_file.original_filename.should == up_file_representation.original_filename
         end
       end
 
       describe "#tempfile" do
         it "returns the uploaded tempfile" do
-          up_file.tempfile.should == tempfile
+          up_file.tempfile.should == up_file_representation.tempfile
         end
       end
 
       describe "#path" do
         it "returns the uploaded tempfile's path" do
-          up_file.path.should == '/tmp/123'
+          up_file.path.should == up_file_representation.tempfile.path
         end
       end
     end
 
-    describe "within a rails application" do
+    context "within a rack (non rails) application" do
+      let(:up_file) { UpFile.new(up_file_representation) }
       let(:up_file_representation) do
-        double('uploaded file', :original_filename => original_filename, :tempfile => tempfile)
+        {
+          :filename => 'me.png',
+          :tempfile => double('tempfile', :path => '/tmp/123')
+        }
       end
 
-      it_behaves_like "any up file"
-    end
-
-    describe "within a rack (non rails) application" do
-      let(:up_file_representation) do
-        { :filename => original_filename, :tempfile => tempfile }
+      describe "#original_filename" do
+        it "returns the original filename of the uploaded file" do
+          up_file.original_filename.should == up_file_representation[:filename]
+        end
       end
 
-      it_behaves_like "any up file"
+      describe "#tempfile" do
+        it "returns the uploaded tempfile" do
+          up_file.tempfile.should == up_file_representation[:tempfile]
+        end
+      end
+
+      describe "#path" do
+        it "returns the uploaded tempfile's path" do
+          up_file.path.should == up_file_representation[:tempfile].path
+        end
+      end
     end
   end
 end
