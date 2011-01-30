@@ -57,5 +57,31 @@ module Adrift
         end
       end
     end
+
+    context "when initialized with a file" do
+      let(:up_file) { UpFile.new(up_file_representation) }
+      let(:up_file_representation) do
+        path = '/avatars/me.png'
+        double('file', :path => path, :to_path => path)
+      end
+
+      describe "#original_filename" do
+        it "returns the original filename of the uploaded file" do
+          up_file.original_filename.should == 'me.png'
+        end
+      end
+
+      describe "#tempfile" do
+        it "returns the uploaded tempfile" do
+          up_file.tempfile.should == up_file_representation
+        end
+      end
+
+      describe "#path" do
+        it "returns the uploaded tempfile's path" do
+          up_file.path.should == up_file_representation.path
+        end
+      end
+    end
   end
 end

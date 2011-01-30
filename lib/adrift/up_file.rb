@@ -20,6 +20,16 @@ module Adrift
           @up_file_representation.tempfile
         end
       end
+
+      module File
+        def original_filename
+          ::File.basename(@up_file_representation)
+        end
+
+        def tempfile
+          @up_file_representation
+        end
+      end
     end
 
     def initialize(up_file_representation)
@@ -27,6 +37,8 @@ module Adrift
         extend Proxies::Rack
       elsif up_file_representation.respond_to?(:original_filename) && up_file_representation.respond_to?(:tempfile)
         extend Proxies::Rails
+      elsif up_file_representation.respond_to?(:path)
+        extend Proxies::File
       else
         raise UnknownUpFileError
       end
