@@ -7,5 +7,7 @@ require 'adrift/processor'
 require 'adrift/storage'
 require 'adrift/up_file'
 
+require 'adrift/railtie' if defined?(Rails::Railtie)
+
 module Adrift
 end
