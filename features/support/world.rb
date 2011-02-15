@@ -1,25 +1,3 @@
-require 'active_record'
-require 'adrift/active_record'
-
-ActiveRecord::Base.establish_connection(
-  :adapter => 'sqlite3',
-  :database => '/tmp/adrift-activerecord.sqlite3'
-)
-
-ActiveRecord::Migration.verbose = false
-
-ActiveRecord::Schema.define(:version => 1) do
-  create_table 'users', :force => true do |t|
-    t.string 'name'
-    t.string 'avatar_filename'
-  end
-end
-
-class User < ActiveRecord::Base
-  validates :name, :presence => true
-  has_attached_file :avatar
-end
-
 module Adrift
   module Cucumber
     module Attachment
@@ -71,6 +49,3 @@ end
 
 World(Adrift::Cucumber::Attachment)
 World(Adrift::Cucumber::ActiveRecord)
-
-Before { User.delete_all }
-After  { system 'rm -rf public' }
