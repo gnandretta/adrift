@@ -1,3 +1,4 @@
+require 'adrift/adhesive'
 require 'adrift/attachment'
 require 'adrift/pattern'
 require 'adrift/processor'

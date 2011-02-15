@@ -6,7 +6,7 @@ module Adrift::Adhesive
     let(:instance) { klass.new }
     let(:klass) do
       Class.new do
-        include ActiveRecord
+        extend ActiveRecord
         attr_accessor :avatar_filename
 
         def self.after_save(*) end
@@ -14,7 +14,7 @@ module Adrift::Adhesive
       end
     end
 
-    context "when included in a class" do
+    context "when extends a class" do
       it "adds a .has_attached_file method" do
         klass.should respond_to(:has_attached_file)
       end
