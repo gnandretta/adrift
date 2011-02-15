@@ -229,8 +229,19 @@ module Adrift
       end
 
       describe "#specialize" do
-        it "returns '.'" do
-          tag.specialize.should == '.'
+        context "when Root.path has been assigned" do
+          after { Root.path = nil }
+
+          it "returns Root.path" do
+            Root.path = '/root/path'
+            tag.specialize.should == '/root/path'
+          end
+        end
+
+        context "when Root.path hasn't been assigned" do
+          it "returns '.' by default" do
+            tag.specialize.should == '.'
+          end
         end
       end
     end

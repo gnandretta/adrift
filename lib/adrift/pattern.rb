@@ -92,12 +92,16 @@ module Adrift
       Pattern.tags << Id.new
 
       class Root
+        class << self
+          attr_accessor :path
+        end
+
         def label
           ':root'
         end
 
         def specialize(options={})
-          '.'
+          self.class.path || '.'
         end
       end
       Pattern.tags << Root.new
