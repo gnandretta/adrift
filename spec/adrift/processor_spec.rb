@@ -2,19 +2,19 @@ require 'spec_helper'
 
 module Adrift
   module Processor
-    describe Convert::Cli do
+    describe Thumbnail::Cli do
       describe "#run" do
         it "calls convert with the proper syntax" do
-          cli = Convert::Cli.new
+          cli = Thumbnail::Cli.new
           cli.should_receive('`').with('convert /tmp/123 -resize "50x50^" -gravity "center" -extent "50x50" /tmp/small-123')
           cli.run('/tmp/123', '/tmp/small-123', :resize => '50x50^', :gravity => 'center', :extent => '50x50')
         end
       end
     end
 
-    describe Convert do
+    describe Thumbnail do
       let(:cli) { double('cli').as_null_object }
-      let(:processor) { Convert.new(cli) }
+      let(:processor) { Thumbnail.new(cli) }
 
       describe "#processed_files" do
         context "for a newly instantiated processor" do

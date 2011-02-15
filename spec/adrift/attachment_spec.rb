@@ -199,7 +199,7 @@ module Adrift
 
       it "has a class to build the attachment's processor" do
         default_options.should have_key(:processor_class)
-        default_options[:processor_class].should == Processor::Convert
+        default_options[:processor_class].should == Processor::Thumbnail
       end
     end
 

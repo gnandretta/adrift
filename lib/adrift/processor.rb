@@ -1,6 +1,6 @@
 module Adrift
   module Processor
-    class Convert
+    class Thumbnail
       class Cli
         def run(source_path, destination_path, options={})
           options_str = options.map { |name, value| %(-#{name} "#{value}") }.join(' ')

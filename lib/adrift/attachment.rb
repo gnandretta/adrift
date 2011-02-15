@@ -21,7 +21,7 @@ module Adrift
         :url             => '/system/attachments/:class_name/:id/:attachment/:filename',
         :path            => ':root/public:url',
         :storage_class   => Storage::Filesystem,
-        :processor_class => Processor::Convert
+        :processor_class => Processor::Thumbnail
       }
     end
 
