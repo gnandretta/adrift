@@ -2,6 +2,14 @@ require 'spec_helper'
 
 module Adrift
   describe UpFile do
+    context "when initialized with an unknown file representation" do
+      it "raises an error" do
+        expect {
+          UpFile.new(Object.new)
+        }.to raise_error(UnknownUpFileRepresentationError)
+      end
+    end
+
     context "within a rails application" do
       let(:up_file) { UpFile.new(up_file_representation) }
       let(:up_file_representation) do

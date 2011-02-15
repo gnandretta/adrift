@@ -1,4 +1,7 @@
 module Adrift
+  class UnknownUpFileRepresentationError < StandardError
+  end
+
   class UpFile
     module Proxy
       def initialize(up_file_representation)
@@ -65,7 +68,7 @@ module Adrift
 
     def self.new(up_file_representation)
       proxy = proxy_for(up_file_representation)
-      raise UnknownUpFileError if proxy.nil?
+      raise UnknownUpFileRepresentationError if proxy.nil?
       proxy.new(up_file_representation)
     end
 
