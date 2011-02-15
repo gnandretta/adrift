@@ -3,7 +3,7 @@ require 'cucumber'
 require 'adrift'
 
 require 'active_record'
-require 'adrift/active_record'
+Adrift::Adhesive::ActiveRecord.install
 
 ActiveRecord::Base.establish_connection(
   :adapter => 'sqlite3',
@@ -27,7 +27,7 @@ end
 require 'dm-core'
 require 'dm-validations'
 require 'dm-migrations'
-require 'adrift/data_mapper'
+Adrift::Adhesive::DataMapper.install
 
 DataMapper.setup(:default, 'sqlite::memory:')
 

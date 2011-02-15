@@ -8,7 +8,14 @@ module Adrift
         before :destroy, :destroy_attachments
       end
 
-      ::DataMapper::Model.append_extensions(self) if defined?(::DataMapper::Model)
+      def self.install
+        if defined?(::DataMapper::Model)
+          ::DataMapper::Model.append_extensions(self)
+        end
+      end
+
+      install
+
     end
   end
 end

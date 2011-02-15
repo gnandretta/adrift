@@ -1,5 +1,4 @@
 require 'spec_helper'
-require 'adrift/adhesive/active_record'
 
 module Adrift::Adhesive
   describe ActiveRecord do

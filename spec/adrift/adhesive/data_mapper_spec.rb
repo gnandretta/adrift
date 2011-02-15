@@ -1,5 +1,4 @@
 require 'spec_helper'
-require 'adrift/adhesive/data_mapper'
 
 module Adrift::Adhesive
   describe DataMapper do

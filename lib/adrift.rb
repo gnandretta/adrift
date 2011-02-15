@@ -1,4 +1,6 @@
 require 'adrift/adhesive'
+require 'adrift/adhesive/active_record'
+require 'adrift/adhesive/data_mapper'
 require 'adrift/attachment'
 require 'adrift/pattern'
 require 'adrift/processor'

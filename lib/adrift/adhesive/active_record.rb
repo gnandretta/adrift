@@ -8,7 +8,14 @@ module Adrift
         before_destroy :destroy_attachments
       end
 
-      ::ActiveRecord::Base.send(:extend, self) if defined?(::ActiveRecord::Base)
+      def self.install
+        if defined?(::ActiveRecord::Base)
+          ::ActiveRecord::Base.send(:extend, self)
+        end
+      end
+
+      install
+
     end
   end
 end
