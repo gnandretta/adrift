@@ -14,13 +14,13 @@ module Adrift
       end
     end
 
-    module ActiveRecord
+    module Model
       attr_accessor :instance, :last_file, :last_attachment, :first_file,
                     :first_attachment
 
-      def instantiate(opts={ :valid => true })
+      def instantiate(orm, opts={ :valid => true })
         @last_id ||= 0
-        self.instance = User.new.tap do |user|
+        self.instance = class_for(orm).new.tap do |user|
           user.id   = @last_id += 1
           user.name = 'ohhgabriel' if opts[:valid]
         end
@@ -43,9 +43,15 @@ module Adrift
       def detach
         instance.avatar.destroy
       end
+
+      def class_for(orm)
+        case orm
+        when :active_record then ARUser
+        end
+      end
     end
   end
 end
 
 World(Adrift::Cucumber::Attachment)
-World(Adrift::Cucumber::ActiveRecord)
+World(Adrift::Cucumber::Model)

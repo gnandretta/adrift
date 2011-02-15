@@ -13,16 +13,16 @@ ActiveRecord::Base.establish_connection(
 ActiveRecord::Migration.verbose = false
 
 ActiveRecord::Schema.define(:version => 1) do
-  create_table 'users', :force => true do |t|
+  create_table 'ar_users', :force => true do |t|
     t.string 'name'
     t.string 'avatar_filename'
   end
 end
 
-class User < ActiveRecord::Base
+class ARUser < ActiveRecord::Base
   validates :name, :presence => true
   has_attached_file :avatar
 end
 
-Before { User.delete_all }
+Before { ARUser.delete_all }
 After  { system 'rm -rf public' }

@@ -1,9 +1,9 @@
 Given /^I instantiate an active record model$/ do
-  instantiate
+  instantiate :active_record
 end
 
 Given /^I instantiate an invalid active record model$/ do
-  instantiate :valid => false
+  instantiate :active_record, :valid => false
 end
 
 When /^I attach a(?:nother)? file to it$/ do
