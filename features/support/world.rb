@@ -47,6 +47,7 @@ module Adrift
       def class_for(orm)
         case orm
         when :active_record then ARUser
+        when :data_mapper   then DMUser
         end
       end
     end

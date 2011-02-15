@@ -24,5 +24,31 @@ class ARUser < ActiveRecord::Base
   has_attached_file :avatar
 end
 
-Before { ARUser.delete_all }
+require 'dm-core'
+require 'dm-validations'
+require 'dm-migrations'
+require 'adrift/data_mapper'
+
+DataMapper.setup(:default, 'sqlite::memory:')
+
+class DMUser
+  include DataMapper::Resource
+
+  property :id,              Serial
+  property :name,            String
+  property :avatar_filename, String
+
+  validates_presence_of :name
+
+  has_attached_file :avatar
+end
+
+DataMapper.finalize
+DataMapper.auto_migrate!
+
+Before do
+  ARUser.delete_all
+  DMUser.destroy
+end
+
 After  { system 'rm -rf public' }

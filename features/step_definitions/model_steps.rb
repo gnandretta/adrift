@@ -6,6 +6,14 @@ Given /^I instantiate an invalid active record model$/ do
   instantiate :active_record, :valid => false
 end
 
+Given /^I instantiate a data mapper model$/ do
+  instantiate :data_mapper
+end
+
+Given /^I instantiate an invalid data mapper model$/ do
+  instantiate :data_mapper, :valid => false
+end
+
 When /^I attach a(?:nother)? file to it$/ do
   attach(attached? ? other_original_file : original_file)
 end
@@ -23,7 +31,11 @@ When /^I detach the file from it$/ do
 end
 
 Then /^it should not be saved$/ do
-  instance.should_not be_persisted
+  if instance.respond_to?(:persisted?)
+    instance.should_not be_persisted
+  else
+    instance.should_not be_saved
+  end
 end
 
 Then /^the(?: second)? file should be stored$/ do
