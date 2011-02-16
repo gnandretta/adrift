@@ -1,4 +1,5 @@
 require 'adrift'
+require 'shared_examples/adhesive'
 
 module Adrift
   module Spec
