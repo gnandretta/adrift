@@ -7,3 +7,5 @@ RSpec::Core::RakeTask.new
 require 'cucumber'
 require 'cucumber/rake/task'
 Cucumber::Rake::Task.new(:features)
+
+task :default => :spec
