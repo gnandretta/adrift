@@ -74,8 +74,34 @@ shared_examples_for Adrift::Adhesive do |options|
   describe "attachment reader" do
     before { klass.has_attached_file :avatar }
 
-    it "returns an attachment" do
-      instance.avatar.should be_instance_of(Adrift::Attachment)
+    context "when an :attachment_class option hasn't been specified" do
+      it "returns an instance of Adrift::Attachment" do
+        instance.avatar.should be_instance_of(Adrift::Attachment)
+      end
+    end
+
+    context "when an :attachment_class option has been specified" do
+      before do
+        klass.has_attached_file(
+          :avatar,
+          :style => { :small => '50x50' },
+          :attachment_class => attachment_class
+        )
+      end
+      let(:attachment_class) { Class.new }
+
+      it "returns an instance of the specified class" do
+        instance.avatar.should be_instance_of(attachment_class)
+      end
+
+      it "instantiates the class withouth the :attachment_class option" do
+        attachment_class.should_receive(:new).with(
+          anything,
+          anything,
+          hash_not_including(:attachment_class)
+        )
+        instance.avatar
+      end
     end
 
     it "is always the same" do

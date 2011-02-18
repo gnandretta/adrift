@@ -4,13 +4,14 @@ module Adrift
       def has_attached_file(name, options={})
         include InstanceMethods
 
-        attachment_definitions[name] = options
+        attachment_definitions[name] = options.dup
+        attachment_class = options.delete(:attachment_class) || Attachment
         define_callbacks
 
         define_method(name) do
           instance_variable = "@#{name}_attachment"
           unless instance_variable_defined?(instance_variable)
-            attachment = Attachment.new(name, self, options)
+            attachment = attachment_class.new(name, self, options)
             instance_variable_set(instance_variable, attachment)
           end
           instance_variable_get(instance_variable)
