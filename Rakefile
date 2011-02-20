@@ -8,4 +8,11 @@ require 'cucumber'
 require 'cucumber/rake/task'
 Cucumber::Rake::Task.new(:features)
 
+require 'rdoc/task'
+RDoc::Task.new do |rdoc|
+  rdoc.rdoc_dir = 'doc'
+  rdoc.title    = 'Adrift'
+  rdoc.rdoc_files.include('lib/**/*.rb')
+end
+
 task :default => :spec
