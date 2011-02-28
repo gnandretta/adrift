@@ -31,7 +31,8 @@ module Adrift
 
     def initialize(name, model, options={})
       self.class.default_options.merge(options).each do |name, value|
-        send "#{name}=", value
+        writer_name = "#{name}="
+        send writer_name, value if respond_to?(writer_name)
       end
       @name, @model = name, model
       @storage      = storage_class.new

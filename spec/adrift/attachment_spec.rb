@@ -246,6 +246,12 @@ module Adrift
           Attachment.default_options[:default_style].should_not be_nil
           attachment.default_style.should == Attachment.default_options[:default_style]
         end
+
+        it "doesn't complain if it doesn't know the option" do
+          expect {
+            Attachment.new(:avatar, user, :imaginary => 'option')
+          }.to_not raise_error
+        end
       end
     end
 
