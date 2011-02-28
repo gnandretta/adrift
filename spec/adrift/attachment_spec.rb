@@ -225,17 +225,27 @@ module Adrift
         attachment.model.should == user
       end
 
-      it "uses the default attachment options" do
-        default_style_option = Attachment.default_options[:default_style]
-        default_style_option.should_not be_nil
-        attachment.default_style.should == default_style_option
+      context "when not providing custom options" do
+        it "uses the default options" do
+          default_style_option = Attachment.default_options[:default_style]
+          default_style_option.should_not be_nil
+          attachment.default_style.should == default_style_option
+        end
       end
 
-      it "allows to provide custom options" do
-        styles = { :small => '50x50', :normal => '100x100' }
-        Attachment.default_options[:styles].should_not == styles
-        attachment = Attachment.new(:avatar, user, :styles => styles)
-        attachment.styles.should == styles
+      context "when providing custom options" do
+        let(:styles) { { :small => '50x50', :normal => '100x100' } }
+        let(:attachment) { Attachment.new(:avatar, user, :styles => styles) }
+
+        it "prefers the custom over the default options" do
+          Attachment.default_options[:styles].should_not == styles
+          attachment.styles.should == styles
+        end
+
+        it "uses the default options when there's not a custom one" do
+          Attachment.default_options[:default_style].should_not be_nil
+          attachment.default_style.should == Attachment.default_options[:default_style]
+        end
       end
     end
 
