@@ -60,6 +60,7 @@ module Adrift
 
     def save
       return unless dirty?
+      processor.process(@up_file.path, styles)
       enqueue_files_for_storage
       storage.flush
       @up_file = nil
@@ -99,7 +100,6 @@ module Adrift
     end
 
     def files_for_storage
-      processor.process(@up_file.path, styles)
       processor.processed_files.dup.tap do |files|
         files[:original] ||= @up_file.path
       end
