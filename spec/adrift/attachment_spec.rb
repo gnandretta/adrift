@@ -261,7 +261,7 @@ module Adrift
       it "changes the default attachment options" do
         default_url = '/missing.png'
         Attachment.default_options[:default_url].should_not == default_url
-        Attachment.config { |c| c.default_url default_url }
+        Attachment.config { default_url default_url }
         Attachment.default_options[:default_url].should == default_url
       end
     end

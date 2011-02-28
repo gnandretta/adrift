@@ -4,13 +4,13 @@ module Adrift
     attr_writer   :default_url, :url, :path
     attr_reader   :name, :model
 
-    def self.config
+    def self.config(&block)
       config = BasicObject.new
       def config.method_missing(m, *args)
         options = Attachment.default_options
         options[m] = args.first if options.has_key?(m)
       end
-      yield(config)
+      config.instance_eval(&block)
     end
 
     def self.default_options
