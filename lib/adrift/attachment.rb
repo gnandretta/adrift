@@ -1,6 +1,6 @@
 module Adrift
   class Attachment
-    attr_accessor :default_style, :styles, :storage, :processor, :storage_class, :processor_class
+    attr_accessor :default_style, :styles, :storage, :processor, :storage_class, :processor_class, :pattern_class
     attr_writer   :default_url, :url, :path
     attr_reader   :name, :model
 
@@ -21,7 +21,8 @@ module Adrift
         :url             => '/system/attachments/:class_name/:id/:attachment/:filename',
         :path            => ':root/public:url',
         :storage_class   => Storage::Filesystem,
-        :processor_class => Processor::Thumbnail
+        :processor_class => Processor::Thumbnail,
+        :pattern_class   => Pattern
       }
     end
 
@@ -86,7 +87,7 @@ module Adrift
     end
 
     def specialize(str, style)
-      Pattern.new(str).specialize(:attachment => self, :style => style)
+      pattern_class.new(str).specialize(:attachment => self, :style => style)
     end
 
     def enqueue_files_for_removal

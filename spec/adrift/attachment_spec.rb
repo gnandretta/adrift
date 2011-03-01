@@ -201,6 +201,11 @@ module Adrift
         default_options.should have_key(:processor_class)
         default_options[:processor_class].should == Processor::Thumbnail
       end
+
+      it "has a pattern class used to build patterns from strings" do
+        default_options.should have_key(:pattern_class)
+        default_options[:pattern_class].should == Pattern
+      end
     end
 
     describe ".reset_default_options" do
