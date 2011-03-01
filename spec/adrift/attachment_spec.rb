@@ -58,11 +58,14 @@ module Adrift
 
     describe "#save" do
       context "when a file hasn't been assigned" do
-        it "doesn't remove or store anything" do
-          attachment.storage.should_not_receive(:store)
-          attachment.storage.should_not_receive(:remove)
-          attachment.storage.should_not_receive(:flush)
+        it "doesn't store anything" do
           attachment.save
+          attachment.storage.stored.should be_empty
+        end
+
+        it "doesn't remove anything" do
+          attachment.save
+          attachment.storage.removed.should be_empty
         end
 
         it "doesn't proccess anything" do
