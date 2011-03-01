@@ -41,7 +41,7 @@ module Adrift
     end
 
     def dirty?
-      !@up_file.nil?
+      !@up_file.nil? || storage.dirty?
     end
 
     def url(style=default_style)
@@ -53,22 +53,29 @@ module Adrift
     end
 
     def assign(up_file)
-      enqueue_files_for_removal unless empty? || dirty?
+      enqueue_files_for_removal
       model_send(:filename=, up_file.original_filename.to_s.tr('^a-zA-Z0-9.', '_'))
       @up_file = up_file
     end
 
+    def clear
+      enqueue_files_for_removal
+      @up_file = nil
+      model_send(:filename=, nil)
+    end
+
     def save
       return unless dirty?
-      processor.process(@up_file.path, styles)
-      enqueue_files_for_storage
+      unless @up_file.nil?
+        processor.process(@up_file.path, styles)
+        enqueue_files_for_storage
+      end
       storage.flush
       @up_file = nil
     end
 
     def destroy
-      return if empty?
-      enqueue_files_for_removal unless dirty?
+      enqueue_files_for_removal
       storage.flush
       model_send(:filename=, nil)
     end
@@ -92,6 +99,7 @@ module Adrift
     end
 
     def enqueue_files_for_removal
+      return if empty? || dirty?
       [:original, *styles.keys].uniq.each { |style| storage.remove path(style) }
     end
 

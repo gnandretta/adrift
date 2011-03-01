@@ -22,6 +22,12 @@ module Adrift
             attachment.should_not be_dirty
           end
         end
+
+        context "and the attachment is cleared" do
+          it "returns true" do
+            attachment.should be_dirty
+          end
+        end
       end
     end
 
@@ -332,6 +338,22 @@ module Adrift
           attachment.storage.removed.should be_empty
         end
       end
+
+      context "when a file has been assigned and then cleared" do
+        before do
+          attachment.assign(up_file_double)
+          attachment.clear
+          attachment.save
+        end
+
+        it "doesn't store anything" do
+          attachment.storage.stored.should be_empty
+        end
+
+        it "doesn't remove anything" do
+          attachment.storage.removed.should be_empty
+        end
+      end
     end
 
     describe "#destroy" do
@@ -347,6 +369,23 @@ module Adrift
     let(:attachment) { Attachment.new(:avatar, user) }
 
     it_behaves_like "any attachment"
+
+    describe "#dirty?" do
+      context "when the attachment is cleared" do
+        before { attachment.clear }
+
+        it "returns true" do
+          attachment.should be_dirty
+        end
+
+        context "and the attachment is saved" do
+          it "returns false" do
+            attachment.save
+            attachment.should_not be_dirty
+          end
+        end
+      end
+    end
 
     describe "#empty?" do
       it "returns false" do
@@ -409,6 +448,13 @@ module Adrift
       end
     end
 
+    describe "#clear" do
+      it "sets to nil the attachment filename in the model" do
+        attachment.clear
+        attachment.filename.should be_nil
+      end
+    end
+
     describe "#save" do
       context "when a file has been assigned" do
         before do
@@ -422,6 +468,27 @@ module Adrift
           attachment.storage.removed.should include('/users/1/original/me.png')
           attachment.storage.removed.should include('/users/1/normal/me.png')
           attachment.storage.removed.should include('/users/1/small/me.png')
+        end
+      end
+
+      context "when the attachment has been cleared" do
+        let(:attachment) { Attachment.new(:avatar, user) }
+        before do
+          attachment.styles = { :normal => '100x100', :small => '50x50' }
+          attachment.path = '/:class_name/:id/:style/:filename'
+          attachment.clear
+          attachment.save
+        end
+
+        it "doesn't store anything" do
+          attachment.storage.stored.should be_empty
+        end
+
+        it "removes the files for each style" do
+          attachment.storage.removed.should include('/users/1/original/me.png')
+          attachment.storage.removed.should include('/users/1/normal/me.png')
+          attachment.storage.removed.should include('/users/1/small/me.png')
+          attachment.storage.removed.size.should == 3
         end
       end
     end
