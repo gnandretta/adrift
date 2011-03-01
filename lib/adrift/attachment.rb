@@ -65,7 +65,6 @@ module Adrift
     end
 
     def save
-      return unless dirty?
       unless @up_file.nil?
         processor.process(@up_file.path, styles)
         enqueue_files_for_storage
@@ -75,9 +74,8 @@ module Adrift
     end
 
     def destroy
-      enqueue_files_for_removal
-      storage.flush
-      model_send(:filename=, nil)
+      clear
+      save
     end
 
     def empty?
