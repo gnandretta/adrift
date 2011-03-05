@@ -2,8 +2,8 @@ module Adrift
   class UnknownUpFileRepresentationError < StandardError
   end
 
-  class UpFile
-    module Proxy
+  module UpFile
+    module Adapter
       def initialize(up_file_representation)
         @up_file_representation = up_file_representation
       end
@@ -13,9 +13,9 @@ module Adrift
       end
     end
 
-    module Proxies
+    module Adapters
       class Rack
-        include Proxy
+        include Adapter
 
         def self.recognize?(up_file_representation)
           up_file_representation.respond_to?(:has_key?) &&
@@ -33,7 +33,7 @@ module Adrift
       end
 
       class Rails
-        include Proxy
+        include Adapter
 
         def self.recognize?(up_file_representation)
           up_file_representation.respond_to?(:original_filename) &&
@@ -50,7 +50,7 @@ module Adrift
       end
 
       class File
-        include Proxy
+        include Adapter
 
         def self.recognize?(up_file_representation)
           up_file_representation.respond_to?(:to_path)
@@ -67,22 +67,22 @@ module Adrift
     end
 
     def self.new(up_file_representation)
-      proxy = proxy_for(up_file_representation)
-      raise UnknownUpFileRepresentationError if proxy.nil?
-      proxy.new(up_file_representation)
+      adapter_class = find_adapter_class(up_file_representation)
+      raise UnknownUpFileRepresentationError if adapter_class.nil?
+      adapter_class.new(up_file_representation)
     end
 
-    private
+  private
 
-    def self.proxy_for(up_file_representation)
-      proxies.find do |proxy|
-        proxy.respond_to?(:recognize?) &&
-          proxy.recognize?(up_file_representation)
+    def self.find_adapter_class(up_file_representation)
+      adapter_classes.find do |adapter|
+        adapter.respond_to?(:recognize?) &&
+          adapter.recognize?(up_file_representation)
       end
     end
 
-    def self.proxies
-      Proxies.constants.map { |proxy_name| Proxies.const_get(proxy_name) }
+    def self.adapter_classes
+      Adapters.constants.map { |class_name| Adapters.const_get(class_name) }
     end
   end
 end
