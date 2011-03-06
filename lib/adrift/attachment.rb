@@ -1,6 +1,6 @@
 module Adrift
   class Attachment
-    attr_accessor :default_style, :styles, :storage, :processor, :storage_class, :processor_class, :pattern_class
+    attr_accessor :default_style, :styles, :storage, :processor, :pattern_class
     attr_writer   :default_url, :url, :path
     attr_reader   :name, :model
 
@@ -15,14 +15,14 @@ module Adrift
 
     def self.default_options
       @default_options ||= {
-        :default_style   => :original,
-        :styles          => {},
-        :default_url     => '/images/missing.png',
-        :url             => '/system/attachments/:class_name/:id/:attachment/:filename',
-        :path            => ':root/public:url',
-        :storage_class   => Storage::Filesystem,
-        :processor_class => Processor::Thumbnail,
-        :pattern_class   => Pattern
+        :default_style => :original,
+        :styles        => {},
+        :default_url   => '/images/missing.png',
+        :url           => '/system/attachments/:class_name/:id/:attachment/:filename',
+        :path          => ':root/public:url',
+        :storage       => Proc.new { Storage::Filesystem.new },
+        :processor     => Proc.new { Processor::Thumbnail.new },
+        :pattern_class => Pattern
       }
     end
 
@@ -33,11 +33,11 @@ module Adrift
     def initialize(name, model, options={})
       self.class.default_options.merge(options).each do |name, value|
         writer_name = "#{name}="
-        send writer_name, value if respond_to?(writer_name)
+        if respond_to?(writer_name)
+          send writer_name, value.is_a?(Proc) ? value.call : value
+        end
       end
       @name, @model = name, model
-      @storage      = storage_class.new
-      @processor    = processor_class.new
     end
 
     def dirty?
