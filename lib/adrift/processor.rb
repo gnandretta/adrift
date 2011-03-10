@@ -1,4 +1,12 @@
 module Adrift
+  # Namespace containing the procesor objects used by Attachment.
+  #
+  # They are used to do whatever it's needed with the attached file,
+  # and need to satisfy the following interface:
+  #
+  # * #process(attached_file_path, styles): Do whatever it needs to do.
+  # * #processed_files: Hash with the style names as keys and the
+  #   paths of the processed files as values.
   module Processor
     # Creates a set of thumbnails of an image.  To be fair, it just
     # tells ImageMagick to do it.
