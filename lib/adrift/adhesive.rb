@@ -17,8 +17,8 @@ module Adrift
           instance_variable_get(instance_variable)
         end
 
-        define_method("#{name}=") do |up_file_representation|
-          send(name).assign(Adrift::UpFile.new(up_file_representation))
+        define_method("#{name}=") do |file_representation|
+          send(name).assign(Adrift::FileToAttach.new(file_representation))
         end
       end
 

@@ -109,7 +109,7 @@ module Adrift
     # saved, that is, files that need to be processed and stored
     # and/or removed.
     def dirty?
-      !@up_file.nil? || storage.dirty?
+      !@file_to_attach.nil? || storage.dirty?
     end
 
     # Returns the attachment's url for the given +style+.  If no
@@ -127,13 +127,19 @@ module Adrift
       specialize(@path, style) unless empty?
     end
 
-    # Makes +up_file+ the new attached file, but it won't be stored
-    # nor processed until the attachment receives #save.  It also
-    # updates the model's attachment filename attribute.
-    def assign(up_file)
+    # Makes +file_to_attach+ the new attached file, but it won't be
+    # stored nor processed until the attachment receives #save.  It
+    # also updates the model's attachment filename attribute.
+    #
+    # See FileToAttach::Adapters for the expected interface of
+    # +file_to_attach+.
+    def assign(file_to_attach)
       enqueue_files_for_removal
-      model_send(:filename=, up_file.original_filename.to_s.tr('^a-zA-Z0-9.', '_'))
-      @up_file = up_file
+      model_send(
+        :filename=,
+        file_to_attach.original_filename.to_s.tr('^a-zA-Z0-9.', '_')
+      )
+      @file_to_attach = file_to_attach
     end
 
     # Throws away the current attached file, but it won't actually be
@@ -141,7 +147,7 @@ module Adrift
     # model's attachment filename attribute to nil.
     def clear
       enqueue_files_for_removal
-      @up_file = nil
+      @file_to_attach = nil
       model_send(:filename=, nil)
     end
 
@@ -153,12 +159,12 @@ module Adrift
     #
     # Generally, this will get called when the model is saved.
     def save
-      unless @up_file.nil?
-        processor.process(@up_file.path, styles)
+      unless @file_to_attach.nil?
+        processor.process(@file_to_attach.path, styles)
         enqueue_files_for_storage
       end
       storage.flush
-      @up_file = nil
+      @file_to_attach = nil
     end
 
     # Removes the current attached file, setting the model's
@@ -209,7 +215,7 @@ module Adrift
     # values and their styles as keys.
     def files_for_storage
       processor.processed_files.dup.tap do |files|
-        files[:original] ||= @up_file.path
+        files[:original] ||= @file_to_attach.path
       end
     end
   end
