@@ -86,10 +86,10 @@ module Adrift
         Pattern.tags << class_name_tag
         Pattern.tags << id_tag
         pattern = Pattern.new(':class/:id')
-        class_tag.should_receive(:specialize).with(1,2,3)
-        id_tag.should_receive(:specialize).with(1,2,3)
+        class_tag.should_receive(:specialize).with(1)
+        id_tag.should_receive(:specialize).with(1)
         class_name_tag.should_not_receive(:specialize)
-        pattern.specialize(1,2,3)
+        pattern.specialize(1)
       end
     end
   end
