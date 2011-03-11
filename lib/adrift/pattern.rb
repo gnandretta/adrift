@@ -10,6 +10,174 @@ module Adrift
   # Tags with they specialized values for that Attachment and that
   # style.
   class Pattern
+    # Namespace containing the Tag objects used by Pattern.
+    #
+    # They are the building blocks of a Pattern: a Pattern is
+    # specialized by specializing the Tags that appear in its
+    # string. They need to satisfy the following interface:
+    #
+    # * +#label+: Portion of Pattern#string that is replaced with the
+    #   returned value of +#specialize+.
+    # * +#specialize(options)+: Value that will replace the label in
+    #   the Pattern (+options+ are the same passed to
+    #   Pattern#specialize).
+    module Tags
+      # Pattern's tag that allows to generally express the
+      # Attachment's name.
+      class Attachment
+        # Portion of Pattern#string that will be replaced.
+        def label
+          ':attachment'
+        end
+
+        # Pluralized attachment's name.  Expects +options+ to include
+        # the Attachment (:attachment key).
+        def specialize(options={})
+          options[:attachment].name.to_s.underscore.pluralize
+        end
+      end
+
+      # Pattern's tag that allows to generally express the selected
+      # style.
+      class Style
+        # Portion of Pattern#string that will be replaced.
+        def label
+          ':style'
+        end
+
+        # Selected style, expects +options+ to include it (:style
+        # key).
+        def specialize(options={})
+          options[:style].to_s
+        end
+      end
+
+      # Pattern's tag that allows to generally express the
+      # Attachment's url.
+      class Url
+        # Portion of Pattern#string that will be replaced.
+        def label
+          ':url'
+        end
+
+        # Attachment's url.  Expects +options+ to include the
+        # Attachment (:attachment key).
+        def specialize(options={})
+          options[:attachment].url.to_s
+        end
+      end
+
+      # Pattern's tag that allows to generally express the model's to
+      # which the Attachment belongs class name including its namespace.
+      class Class
+        # Portion of Pattern#string that will be replaced.
+        def label
+          ':class'
+        end
+
+        # Pluralized model's class name namespaced.  Expects +options+
+        # to include the Attachment (:attachment key).
+        def specialize(options={})
+          options[:attachment].model.class.name.underscore.pluralize
+        end
+      end
+
+      # Pattern's tag that allows to generally express the model's to
+      # which the Attachment belongs class name, without its
+      # namespace.
+      class ClassName
+        # Portion of Pattern#string that will be replaced.
+        def label
+          ':class_name'
+        end
+
+        # Pluralized model's class name no namespaced.  Expects
+        # +options+ to include the Attachment (:attachment key).
+        def specialize(options={})
+          options[:attachment].model.class.name.demodulize.underscore.pluralize
+        end
+      end
+
+      # Pattern's tag that allows to generally express the model's to
+      # which the Attachment belongs ID.
+      class Id
+        # Portion of Pattern#string that will be replaced.
+        def label
+          ':id'
+        end
+
+        # Model's ID.  Expects +options+ to include the Attachment
+        # (:attachment key).
+        def specialize(options={})
+          options[:attachment].model.id.to_s
+        end
+      end
+
+      # Pattern's tag that represents the application root directory.
+      class Root
+        class << self
+          attr_accessor :path
+        end
+
+        # Portion of Pattern#string that will be replaced.
+        def label
+          ':root'
+        end
+
+        # Returns Adrift::Pattern::Tags::Root.path when defined, '.'
+        # otherwise.
+        def specialize(*)
+          self.class.path || '.'
+        end
+      end
+
+      # Pattern's tag that allows to generally express the
+      # Attachment's file name.
+      class Filename
+        # Portion of Pattern#string that will be replaced.
+        def label
+          ':filename'
+        end
+
+        # Attachment's filename.  Expects +options+ to include the
+        # Attachment (:attachment key).
+        def specialize(options={})
+          options[:attachment].filename.to_s
+        end
+      end
+
+      # Pattern's tag that allows to generally express the
+      # Attachment's file base name.
+      class Basename
+        # Portion of Pattern#string that will be replaced.
+        def label
+          ':basename'
+        end
+
+        # Attachment's file base name.  Expects +options+ to include
+        # the Attachment (:attachment key).
+        def specialize(options={})
+          filename = options[:attachment].filename.to_s
+          filename.sub(File.extname(filename), '')
+        end
+      end
+
+      # Pattern's tag that allows to generally express the
+      # Attachment's extension.
+      class Extension
+        # Portion of Pattern#string that will be replaced.
+        def label
+          ':extension'
+        end
+
+        # Attachment's file extension.  Expects +options+ to include
+        # the Attachment (:attachment key).
+        def specialize(options={})
+          File.extname(options[:attachment].filename.to_s).sub('.', '')
+        end
+      end
+    end
+
     # Tags every instance of Pattern will be able to recognize (and
     # specialize).
     def self.tags
@@ -40,184 +208,9 @@ module Adrift
     def sorted_tags
       self.class.tags.sort_by(&:label).reverse
     end
+  end
 
-    # Namespace containing the Tag objects used by Pattern.
-    #
-    # They are the building blocks of a Pattern: a Pattern is
-    # specialized by specializing the Tags that appear in its
-    # string. They need to satisfy the following interface:
-    #
-    # * +#label+: Portion of Pattern#string that is replaced with the
-    #   returned value of +#specialize+.
-    # * +#specialize(options)+: Value that will replace the label in
-    #   the Pattern (+options+ are the same passed to
-    #   Pattern#specialize).
-    module Tags
-      # Pattern's tag that allows to generally express the
-      # Attachment's name.
-      class Attachment
-        # Portion of Pattern#string that will be replaced.
-        def label
-          ':attachment'
-        end
-
-        # Pluralized attachment's name.  Expects +options+ to include
-        # the Attachment (:attachment key).
-        def specialize(options={})
-          options[:attachment].name.to_s.underscore.pluralize
-        end
-      end
-      Pattern.tags << Attachment.new
-
-      # Pattern's tag that allows to generally express the selected
-      # style.
-      class Style
-        # Portion of Pattern#string that will be replaced.
-        def label
-          ':style'
-        end
-
-        # Selected style, expects +options+ to include it (:style
-        # key).
-        def specialize(options={})
-          options[:style].to_s
-        end
-      end
-      Pattern.tags << Style.new
-
-      # Pattern's tag that allows to generally express the
-      # Attachment's url.
-      class Url
-        # Portion of Pattern#string that will be replaced.
-        def label
-          ':url'
-        end
-
-        # Attachment's url.  Expects +options+ to include the
-        # Attachment (:attachment key).
-        def specialize(options={})
-          options[:attachment].url.to_s
-        end
-      end
-      Pattern.tags << Url.new
-
-      # Pattern's tag that allows to generally express the model's to
-      # which the Attachment belongs class name including its namespace.
-      class Class
-        # Portion of Pattern#string that will be replaced.
-        def label
-          ':class'
-        end
-
-        # Pluralized model's class name namespaced.  Expects +options+
-        # to include the Attachment (:attachment key).
-        def specialize(options={})
-          options[:attachment].model.class.name.underscore.pluralize
-        end
-      end
-      Pattern.tags << Class.new
-
-      # Pattern's tag that allows to generally express the model's to
-      # which the Attachment belongs class name, without its
-      # namespace.
-      class ClassName
-        # Portion of Pattern#string that will be replaced.
-        def label
-          ':class_name'
-        end
-
-        # Pluralized model's class name no namespaced.  Expects
-        # +options+ to include the Attachment (:attachment key).
-        def specialize(options={})
-          options[:attachment].model.class.name.demodulize.underscore.pluralize
-        end
-      end
-      Pattern.tags << ClassName.new
-
-      # Pattern's tag that allows to generally express the model's to
-      # which the Attachment belongs ID.
-      class Id
-        # Portion of Pattern#string that will be replaced.
-        def label
-          ':id'
-        end
-
-        # Model's ID.  Expects +options+ to include the Attachment
-        # (:attachment key).
-        def specialize(options={})
-          options[:attachment].model.id.to_s
-        end
-      end
-      Pattern.tags << Id.new
-
-      # Pattern's tag that represents the application root directory.
-      class Root
-        class << self
-          attr_accessor :path
-        end
-
-        # Portion of Pattern#string that will be replaced.
-        def label
-          ':root'
-        end
-
-        # Returns Adrift::Pattern::Tags::Root.path when defined, '.'
-        # otherwise.
-        def specialize(*)
-          self.class.path || '.'
-        end
-      end
-      Pattern.tags << Root.new
-
-      # Pattern's tag that allows to generally express the
-      # Attachment's file name.
-      class Filename
-        # Portion of Pattern#string that will be replaced.
-        def label
-          ':filename'
-        end
-
-        # Attachment's filename.  Expects +options+ to include the
-        # Attachment (:attachment key).
-        def specialize(options={})
-          options[:attachment].filename.to_s
-        end
-      end
-      Pattern.tags << Filename.new
-
-      # Pattern's tag that allows to generally express the
-      # Attachment's file base name.
-      class Basename
-        # Portion of Pattern#string that will be replaced.
-        def label
-          ':basename'
-        end
-
-        # Attachment's file base name.  Expects +options+ to include
-        # the Attachment (:attachment key).
-        def specialize(options={})
-          filename = options[:attachment].filename.to_s
-          filename.sub(File.extname(filename), '')
-        end
-      end
-      Pattern.tags << Basename.new
-
-      # Pattern's tag that allows to generally express the
-      # Attachment's extension.
-      class Extension
-        # Portion of Pattern#string that will be replaced.
-        def label
-          ':extension'
-        end
-
-        # Attachment's file extension.  Expects +options+ to include
-        # the Attachment (:attachment key).
-        def specialize(options={})
-          File.extname(options[:attachment].filename.to_s).sub('.', '')
-        end
-      end
-      Pattern.tags << Extension.new
-
-    end
+  Pattern::Tags.constants.each do |class_name|
+    Pattern.tags << Pattern::Tags.const_get(class_name).new
   end
 end
