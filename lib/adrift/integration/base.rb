@@ -72,7 +72,7 @@ module Adrift
         end
 
         define_method("#{name}=") do |file_representation|
-          send(name).assign(Adrift::FileToAttach.new(file_representation))
+          send(name).assign(FileToAttach.new(file_representation))
         end
       end
 
