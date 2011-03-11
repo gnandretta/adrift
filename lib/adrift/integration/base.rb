@@ -41,10 +41,10 @@ module Adrift
       #
       # +name+ and +options+ are the arguments that Attachment::new
       # expects, and receives, with the exception that it accepts an
-      # <tt>:attachment_class</tt> option with a custom class to use
-      # instead of Attachment.  In that case,
-      # <tt>options[:attachment_class]</tt> will receive +new+ with
-      # +name+, the model, and +options+ without :attachment_class.
+      # <tt>:class</tt> option with a custom class to use instead of
+      # Attachment.  In that case, <tt>options[:class]</tt> will
+      # receive +new+ with +name+, the model, and +options+ without
+      # :attachment_class.
       #
       # The accessor methods are named after the Attachment: the
       # following code will define +avatar+ and <tt>avatar=</tt> on
@@ -60,7 +60,7 @@ module Adrift
         include InstanceMethods
 
         attachment_definitions[name] = options.dup
-        attachment_class = options.delete(:attachment_class) || Attachment
+        attachment_class = options.delete(:class) || Attachment
 
         define_method(name) do
           instance_variable = "@#{name}_attachment"
