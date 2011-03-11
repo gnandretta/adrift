@@ -1,21 +1,20 @@
-shared_examples_for Adrift::Adhesive do |options|
+shared_examples_for Adrift::Integration::Base do
   let(:instance) { klass.new }
   let(:klass) do
     Class.new.tap do |klass|
       klass.send :extend, described_class
       klass.send :attr_accessor, :avatar_filename
-      options[:callbacks].each { |name, *| klass.stub(name) }
     end
   end
 
   context "when extends a class" do
-    it "adds a .has_attached_file method" do
-      klass.should respond_to(:has_attached_file)
+    it "adds a .attachment method" do
+      klass.should respond_to(:attachment)
     end
   end
 
-  describe ".has_attached_file" do
-    before { klass.has_attached_file :avatar }
+  describe ".attachment" do
+    before { klass.attachment :avatar }
 
     it "adds a #attachments method" do
       klass.instance_methods.should include(:attachments)
@@ -37,24 +36,17 @@ shared_examples_for Adrift::Adhesive do |options|
       klass.instance_methods.should include(:avatar)
     end
 
-    options[:callbacks].each do |name, args|
-      it "defines an #{name} callback" do
-        klass.should_receive(name).with(*args)
-        klass.has_attached_file :avatar
-      end
-    end
-
     it "registers the attachment definition" do
       definition = { :styles => { :normal => '100x100' } }
-      klass.has_attached_file :avatar, definition
+      klass.attachment :avatar, definition
       klass.attachment_definitions[:avatar].should == definition
     end
   end
 
   describe ".save_attachments" do
     it "saves every attachment" do
-      klass.has_attached_file :avatar
-      klass.has_attached_file :photo
+      klass.attachment :avatar
+      klass.attachment :photo
       instance.avatar.should_receive(:save)
       instance.photo.should_receive(:save)
       instance.save_attachments
@@ -63,8 +55,8 @@ shared_examples_for Adrift::Adhesive do |options|
 
   describe ".destroy_attachments" do
     it "destroy every attachment" do
-      klass.has_attached_file :avatar
-      klass.has_attached_file :photo
+      klass.attachment :avatar
+      klass.attachment :photo
       instance.avatar.should_receive(:destroy)
       instance.photo.should_receive(:destroy)
       instance.destroy_attachments
@@ -72,7 +64,7 @@ shared_examples_for Adrift::Adhesive do |options|
   end
 
   describe "attachment reader" do
-    before { klass.has_attached_file :avatar }
+    before { klass.attachment :avatar }
 
     context "when an :attachment_class option hasn't been specified" do
       it "returns an instance of Adrift::Attachment" do
@@ -82,7 +74,7 @@ shared_examples_for Adrift::Adhesive do |options|
 
     context "when an :attachment_class option has been specified" do
       before do
-        klass.has_attached_file(
+        klass.attachment(
           :avatar,
           :style => { :small => '50x50' },
           :attachment_class => attachment_class
@@ -114,7 +106,7 @@ shared_examples_for Adrift::Adhesive do |options|
 
     it "has the specified options" do
       styles = { :small => '50x50' }
-      klass.has_attached_file :avatar, :styles => styles
+      klass.attachment :avatar, :styles => styles
       instance.avatar.styles.should == styles
     end
   end
@@ -128,7 +120,7 @@ shared_examples_for Adrift::Adhesive do |options|
     end
 
     it "assigns its argument to the attachment" do
-      klass.has_attached_file :avatar
+      klass.attachment :avatar
       instance.avatar = up_file_representation
       instance.avatar.filename.should == 'me.png'
     end

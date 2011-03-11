@@ -1,9 +1,12 @@
-module Adrift
-  module Adhesive
-    module DataMapper
-      include ClassMethods
+require 'adrift/integration/base'
 
-      def define_callbacks
+module Adrift
+  module Integration
+    module DataMapper
+      include Base
+
+      def attachment(*)
+        super
         after  :save,    :save_attachments
         before :destroy, :destroy_attachments
       end

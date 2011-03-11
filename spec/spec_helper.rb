@@ -1,5 +1,6 @@
 require 'adrift'
-require 'shared_examples/adhesive'
+require 'adrift/integration'
+require 'shared_examples/integration/base'
 
 module Adrift
   module Spec

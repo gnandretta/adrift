@@ -1,9 +1,10 @@
 $:.unshift File.expand_path('../../../lib', __FILE__)
 require 'cucumber'
 require 'adrift'
+require 'adrift/integration'
 
 require 'active_record'
-Adrift::Adhesive::ActiveRecord.install
+Adrift::Integration::ActiveRecord.install
 
 ActiveRecord::Base.establish_connection(
   :adapter => 'sqlite3',
@@ -21,13 +22,13 @@ end
 
 class ARUser < ActiveRecord::Base
   validates :name, :presence => true
-  has_attached_file :avatar
+  attachment :avatar
 end
 
 require 'dm-core'
 require 'dm-validations'
 require 'dm-migrations'
-Adrift::Adhesive::DataMapper.install
+Adrift::Integration::DataMapper.install
 
 DataMapper.setup(:default, 'sqlite::memory:')
 
@@ -40,7 +41,7 @@ class DMUser
 
   validates_presence_of :name
 
-  has_attached_file :avatar
+  attachment :avatar
 end
 
 DataMapper.finalize
