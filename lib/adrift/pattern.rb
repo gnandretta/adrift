@@ -12,15 +12,17 @@ module Adrift
   class Pattern
     # Namespace containing the Tag objects used by Pattern.
     #
-    # They are the building blocks of a Pattern: a Pattern is
+    # They are the building blocks of a Pattern.  A Pattern is
     # specialized by specializing the Tags that appear in its
     # string. They need to satisfy the following interface:
     #
-    # * +#label+: Portion of Pattern#string that is replaced with the
-    #   returned value of +#specialize+.
-    # * +#specialize(options)+: Value that will replace the label in
-    #   the Pattern (+options+ are the same passed to
-    #   Pattern#specialize).
+    # [+#label+]
+    #   Portion of Pattern#string that is replaced with the returned
+    #   value of +#specialize+.
+    #
+    # [<tt>#specialize(options)</tt>]
+    #   Value that will replace the label in the Pattern (+options+
+    #   are the same passed to Pattern#specialize).
     module Tags
       # Pattern's tag that allows to generally express the
       # Attachment's name.
@@ -30,8 +32,8 @@ module Adrift
           ':attachment'
         end
 
-        # Pluralized attachment's name.  Expects +options+ to include
-        # the Attachment (:attachment key).
+        # Pluralized Attachment's name.  Expects +options+ to include
+        # the Attachment (+:attachment+ key).
         def specialize(options={})
           options[:attachment].name.to_s.underscore.pluralize
         end
@@ -45,7 +47,7 @@ module Adrift
           ':style'
         end
 
-        # Selected style, expects +options+ to include it (:style
+        # Selected style, expects +options+ to include it (+:style+
         # key).
         def specialize(options={})
           options[:style].to_s
@@ -61,7 +63,7 @@ module Adrift
         end
 
         # Attachment's url.  Expects +options+ to include the
-        # Attachment (:attachment key).
+        # Attachment (+:attachment+ key).
         def specialize(options={})
           options[:attachment].url.to_s
         end
@@ -76,7 +78,7 @@ module Adrift
         end
 
         # Pluralized model's class name namespaced.  Expects +options+
-        # to include the Attachment (:attachment key).
+        # to include the Attachment (+:attachment+ key).
         def specialize(options={})
           options[:attachment].model.class.name.underscore.pluralize
         end
@@ -92,7 +94,7 @@ module Adrift
         end
 
         # Pluralized model's class name no namespaced.  Expects
-        # +options+ to include the Attachment (:attachment key).
+        # +options+ to include the Attachment (+:attachment+ key).
         def specialize(options={})
           options[:attachment].model.class.name.demodulize.underscore.pluralize
         end
@@ -107,7 +109,7 @@ module Adrift
         end
 
         # Model's ID.  Expects +options+ to include the Attachment
-        # (:attachment key).
+        # (+:attachment+ key).
         def specialize(options={})
           options[:attachment].model.id.to_s
         end
@@ -140,7 +142,7 @@ module Adrift
         end
 
         # Attachment's filename.  Expects +options+ to include the
-        # Attachment (:attachment key).
+        # Attachment (+:attachment+ key).
         def specialize(options={})
           options[:attachment].filename.to_s
         end
@@ -155,7 +157,7 @@ module Adrift
         end
 
         # Attachment's file base name.  Expects +options+ to include
-        # the Attachment (:attachment key).
+        # the Attachment (+:attachment+ key).
         def specialize(options={})
           filename = options[:attachment].filename.to_s
           filename.sub(File.extname(filename), '')
@@ -171,7 +173,7 @@ module Adrift
         end
 
         # Attachment's file extension.  Expects +options+ to include
-        # the Attachment (:attachment key).
+        # the Attachment (+:attachment+ key).
         def specialize(options={})
           File.extname(options[:attachment].filename.to_s).sub('.', '')
         end
@@ -195,7 +197,7 @@ module Adrift
     # Returns #string with the known Tags replaced with their specific
     # values the given +options+.  While +options+ is just a Hash,
     # it's expected to include the Attachment this Pattern belongs to
-    # (:attachment key), and the selected style (:style key).
+    # (+:attachment+ key), and the selected style (+:style+ key).
     def specialize(options={})
       sorted_tags.inject(string) do |result, tag|
         result.gsub(tag.label) { tag.specialize(options) }
