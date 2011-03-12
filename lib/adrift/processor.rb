@@ -4,16 +4,21 @@ module Adrift
   # They are used to do whatever it's needed with the attached file,
   # and need to satisfy the following interface:
   #
-  # * #process(attached_file_path, styles): Do whatever it needs to do.
-  # * #processed_files: Hash with the style names as keys and the
-  #   paths of the processed files as values.
+  # [<tt>#process(attached_file_path, styles)</tt>]
+  #   Do whatever it needs to do.  Generally this means creating new
+  #   files from the attached one, but it can also mean transforming
+  #   the attached file.
+  #
+  # [<tt>#processed_files</tt>]
+  #   Hash with the style names as keys and the paths of the processed
+  #   files as values.
   module Processor
     # Creates a set of thumbnails of an image.  To be fair, it just
     # tells ImageMagick to do it.
     class Thumbnail
       # A wrapper around ImageMagick's convert command line tool.
       class Cli
-        # Runs +convert+ with the given +input+ and +options+, which
+        # Runs *convert* with the given +input+ and +options+, which
         # are expressed in a Hash.  The resulting image is stored in
         # +output+.
         def run(input, output, options={})
@@ -22,9 +27,12 @@ module Adrift
         end
       end
 
+      # Hash with the style names as keys and the paths as values of
+      # the files generated in the last #process.
       attr_reader :processed_files
 
-      # Creates a new Thumbnail object.
+      # Creates a new Thumbnail object.  +cli+ is a wrapper around
+      # convert (see Cli).
       def initialize(cli=Cli.new)
         @processed_files = {}
         @cli = cli
