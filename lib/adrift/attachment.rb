@@ -6,7 +6,7 @@ module Adrift
   # this process: it relies on a #storage object, for saving and
   # removing the attached files, and on a #processor object, for the
   # task of generating the different versions of a file from the given
-  # style definition.
+  # style definitions.
   #
   # Also, it provides a naive pattern mechanism to express the
   # attachment's #path and #url.
@@ -16,7 +16,7 @@ module Adrift
     attr_reader   :name, :model
 
     # Allows to change the options used for every new attachment.  For
-    # instance, to change the :default_style and :path options:
+    # instance, to change the +:default_style+ and +:path+ options:
     #
     #   Adrift::Attachment.config do
     #     default_style :default
@@ -33,30 +33,52 @@ module Adrift
       config.instance_eval(&block)
     end
 
-    # Default options for every new attachment.  These are:
-    # * :default_style: Style assumed by #url and #path when no one
-    #   has been provided.
-    # * :styles: Hash with the style definitions, they keys are the
-    #   style names, and the values whatever makes sense to the
-    #   processor to generate the alternate versions of the attached
-    #   file.
-    # * :default_url: String pattern used to build the returned value
-    #   of #url when the attachment is empty.
-    # * :url: String pattern used to build the returned value of #url
-    #   when the attachment is not empty.
-    # * :path: String pattern used to build the path where the
-    #   attachment will be stored (and will be returned by #path).
-    #   NOTE: please beware that if you have an attachment with more
-    #   than one style, the path must be unique for each one,
-    #   otherwise the stored files will be overwritten.  In the most
-    #   common case, what this means is that the path option must have
-    #   a +:style+ tag.
-    # * :storage: Object delegated with the task of saving and
-    #   removing files.
-    # * :processor: Object delegated with the task of generating the
-    #   alternate versions of the attached file from the :styles.
-    # * :pattern_class: The class used to build the urls and paths of
-    #   the attachment from the string patterns provided.
+    # Default options for every new Attachment.  These are:
+    #
+    # [+:default_style+]
+    #   Style assumed by #url and #path when no one has been provided.
+    #
+    # [+:styles+]
+    #   Hash with the style definitions, they keys are the style
+    #   names, and the values whatever makes sense to the processor to
+    #   generate the alternate versions of the attached file.  By
+    #   default, they indicate the thumbnails dimmensions, for
+    #   instance:
+    #
+    #       styles: { small: '50x50', medium: '100x100' }
+    #
+    #   See Processor::Thumbnail for the details.
+    #
+    # [+:default_url+]
+    #   String pattern used to build the returned value of #url when
+    #   the attachment is empty.
+    #
+    # [+:url+]
+    #   String pattern used to build the returned value of #url when
+    #   the attachment is not empty.
+    #
+    # [+:path+]
+    #   String pattern used to build the path where the attachment
+    #   will be stored (and will be returned by #path).
+    #
+    #   *Note*: when having an attachment with more than one style,
+    #   the path must be unique for each one, otherwise the stored
+    #   files will be overwritten.  In the most common case, what this
+    #   means is just that the path option must have a +:style+ tag.
+    #
+    # [+:storage+]
+    #   Object delegated with the task of saving and removing files.
+    #   See Storage for details and Storage::Filesystem for an
+    #   implementation.
+    #
+    # [+:processor+]
+    #   Object delegated with the task of generating the alternate
+    #   versions of the attached file from the :styles.  See Processor
+    #   for details and Processor::Thumbnail for an implementation.
+    #
+    # [+:pattern_class+]
+    #   The class used to build the #url and #path of the Attachment
+    #   from the string patterns provided.
     #
     # See the source of this method to know the values of this
     # options. Note that these values can be changed for every new
@@ -84,14 +106,15 @@ module Adrift
     end
 
     # Creates a new Attachment object. +name+ is the name of the
-    # attachment, +model+ is the model object it's attached to, and
-    # +options+ is a hash that lets customize the attachment's
+    # Attachment, +model+ is the model object it's attached to, and
+    # +options+ is a Hash that lets customize the Attachment's
     # behaviour.
     #
     # The +model+ object must allow reading and writing to an
-    # attribute called after the attachment's +name+.  For instance,
-    # for an attachment named +avatar+, the +model+ need to respond to
-    # the methods +avatar_filename+ and +avatar_filename=+.
+    # attribute called after the Attachment's +name+ which stores the
+    # attached file's name.  For instance, for an attachment named
+    # +avatar+, the +model+ needs to respond to the methods
+    # +avatar_filename+ and +avatar_filename=+.
     #
     # See ::default_options for a list of the supported +options+.
     # The options passed here will overwrite the default ones.
@@ -113,15 +136,15 @@ module Adrift
     end
 
     # Returns the attachment's url for the given +style+.  If no
-    # +style+ is given it assumes the :default_style option.  Also, it
-    # uses the :url or the :default_url option, depending whether or
-    # not the attachment is empty.
+    # +style+ is given it assumes the +:default_style+ option.  Also,
+    # it uses the +:url+ or the +:default_url+ option, depending
+    # whether or not the attachment is empty.
     def url(style=default_style)
       specialize(empty? ? @default_url : @url, style)
     end
 
     # Returns the attachment's path for the given +style+.  If no
-    # +style+ is given it assumes :default_style option.  When the
+    # +style+ is given it assumes +:default_style+ option.  When the
     # attachment is empty it returns +nil+.
     def path(style=default_style)
       specialize(@path, style) unless empty?
@@ -129,7 +152,7 @@ module Adrift
 
     # Makes +file_to_attach+ the new attached file, but it won't be
     # stored nor processed until the attachment receives #save.  It
-    # also updates the model's attachment filename attribute.
+    # also updates the model's attachment file name attribute.
     #
     # See FileToAttach::Adapters for the expected interface of
     # +file_to_attach+.
@@ -144,7 +167,7 @@ module Adrift
 
     # Throws away the current attached file, but it won't actually be
     # removed until the attachment receives #save.  It also sets the
-    # model's attachment filename attribute to nil.
+    # model's attachment file name attribute to +nil+.
     def clear
       enqueue_files_for_removal
       @file_to_attach = nil
@@ -168,13 +191,14 @@ module Adrift
     end
 
     # Removes the current attached file, setting the model's
-    # attachment filename attribute to nil.
+    # attachment file name attribute to +nil+.
     def destroy
       clear
       save
     end
 
-    # Indicates whether or not there is a file attached.
+    # Indicates whether or not there is a file attached.  Note that a
+    # file could be attached without being stored or processed.
     def empty?
       filename.nil?
     end
