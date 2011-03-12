@@ -6,9 +6,9 @@ module Adrift
   # adapters for the Rack and Rails' uploaded file representations and
   # File instances.
   module FileToAttach
-    # Common adapter behaviour.
+    # Common adapter behaviour for the files who will be attached.
     module Adapter
-      # Creates a new Adapter.
+      # Creates a new Adapter for the +file_representation+.
       def initialize(file_representation)
         @file_representation = file_representation
       end
@@ -19,8 +19,8 @@ module Adrift
     # :original_filename and :path (what theese methods return it's
     # pretty much self-explanatory).
     module Adapters
-      # Adapter for a uploaded file within a Rack (non-Rails)
-      # application.
+      # Adapter that allows to attach an uploaded file within a Rack
+      # (non-Rails) application.
       class Rack
         include Adapter
 
@@ -32,18 +32,19 @@ module Adrift
             file_representation.has_key?(:tempfile)
         end
 
-        # Returns the uploaded file's original filename.
+        # Uploaded file's original filename.
         def original_filename
           @file_representation[:filename]
         end
 
-        # Returns the uploaded file's path.
+        # Uploaded file's path.
         def path
           @file_representation[:tempfile].path
         end
       end
 
-      # Adapter for a uploaded file within Rails.
+      # Adapter that allows to attach an uploaded file within a Rails
+      # application.
       class Rails
         include Adapter
 
@@ -54,18 +55,18 @@ module Adrift
             file_representation.respond_to?(:tempfile)
         end
 
-        # Returns the uploaded file's original filename.
+        # Uploaded file's original filename.
         def original_filename
           @file_representation.original_filename
         end
 
-        # Returns the uploaded file's path.
+        # Uploaded file's path.
         def path
           @file_representation.tempfile.path
         end
       end
 
-      # Adapter for a local file.
+      # Adapter that allow to attach a local file.
       class LocalFile
         include Adapter
 
@@ -75,12 +76,12 @@ module Adrift
           file_representation.respond_to?(:to_path)
         end
 
-        # Returns the local file's name.
+        # Local file's name.
         def original_filename
           ::File.basename(@file_representation.to_path)
         end
 
-        # Returns the local file's path.
+        # Local file's path.
         def path
           @file_representation.to_path
         end
@@ -90,7 +91,7 @@ module Adrift
     # Creates a new object that will that will act as an adapter for
     # +file_representation+, the object that represents the file to be
     # attached.  This adapter wil have the interface expected by
-    # Attachment#assing.
+    # Attachment#assign.
     #
     # Raises Adrift::UnknownFileRepresentationError when it can't
     # recognize +file_representation+.
