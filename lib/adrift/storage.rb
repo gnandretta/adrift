@@ -4,11 +4,20 @@ module Adrift
   # They are used to save and remove files, and need to satisfy the
   # following interface:
   #
-  # * #store(source_path, destination_path): Adds a file to be stored.
-  # * #remove(path): Indicates that a file will be removed.
-  # * #flush: Store and remove the previously specified files.
-  # * #stored: Array of stored files in the last flush.
-  # * #removed: Array of removed files in the last flush.
+  # [<tt>#store(source_path, destination_path)</tt>]
+  #   Adds a file to be stored.
+  #
+  # [<tt>#remove(path)</tt>]
+  #   Indicates that a file will be removed.
+  #
+  # [<tt>#flush</tt>]
+  #   Store and remove the previously specified files.
+  #
+  # [<tt>#stored</tt>]
+  #   Array of stored files in the last flush.
+  #
+  # [<tt>#removed</tt>]
+  #   Array of removed files in the last flush.
   module Storage
     # Stores and removes files to and from the filesystem using
     # queues.
