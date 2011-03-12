@@ -36,24 +36,24 @@ module Adrift
 
       # Defines accessor methods for the Attachment, includes
       # InstanceMethods in the model class, and stores the attachment
-      # +name+ and +options+ (see #attachment_definitions) for future
-      # reference.
+      # +name+ and +options+ for future reference (see
+      # #attachment_definitions).
       #
       # +name+ and +options+ are the arguments that Attachment::new
       # expects, and receives, with the exception that it accepts an
       # <tt>:class</tt> option with a custom class to use instead of
       # Attachment.  In that case, <tt>options[:class]</tt> will
       # receive +new+ with +name+, the model, and +options+ without
-      # :attachment_class.
+      # +:class+.
       #
-      # The accessor methods are named after the Attachment: the
-      # following code will define +avatar+ and <tt>avatar=</tt> on
-      # the model class that receives #attachment:
+      # The accessor methods are named after the Attachment. For
+      # instance, the following code will define +avatar+ and
+      # <tt>avatar=</tt> on the model class that receives #attachment:
       #
       #     attachment :avatar
       #
       # The writter method (in the example: <tt>avatar=</tt>) will
-      # assign to the attachment the results of calling
+      # assign to the Attachment the results of calling
       # FileToAttach::new with its argument.  See Attachment#assign
       # for more details.
       def attachment(name, options={})

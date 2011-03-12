@@ -6,7 +6,7 @@ module Adrift
     module ActiveRecord
       include Base
 
-      # Does everything Base#Attachment does, but it also registers
+      # Does everything Base#attachment does, but it also registers
       # the callbacks to save the attachments when the model is saved,
       # and to destroy them, when it is destroyed.
       def attachment(*)
