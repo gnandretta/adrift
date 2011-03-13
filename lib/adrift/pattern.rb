@@ -63,9 +63,10 @@ module Adrift
         end
 
         # Attachment's url.  Expects +options+ to include the
-        # Attachment (+:attachment+ key).
+        # Attachment (+:attachment+ key), and the selected style
+        # (+:style+ key). .
         def specialize(options={})
-          options[:attachment].url.to_s
+          options[:attachment].url(options[:style]).to_s
         end
       end
 
