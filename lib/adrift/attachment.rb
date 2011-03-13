@@ -89,8 +89,8 @@ module Adrift
       @default_options ||= {
         :default_style => :original,
         :styles        => {},
-        :default_url   => '/images/missing.png',
-        :url           => '/system/attachments/:class_name/:id/:attachment/:filename',
+        :default_url   => '/:attachment/:style/missing.png',
+        :url           => '/system/:attachment/:id/:style/:filename',
         :path          => ':root/public:url',
         :storage       => Proc.new { Storage::Filesystem.new },
         :processor     => Proc.new { Processor::Thumbnail.new },

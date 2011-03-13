@@ -251,7 +251,7 @@ module Adrift
 
     describe "#url" do
       it "returns a default url" do
-        attachment.url.should == '/images/missing.png'
+        attachment.url.should == '/avatars/original/missing.png'
       end
 
       it "builds the default url from a pattern if there's one" do
@@ -354,7 +354,7 @@ module Adrift
 
     describe "#url" do
       it "builds its url from a default pattern" do
-        attachment.url.should == '/system/attachments/users/1/avatars/me.png'
+        attachment.url.should == '/system/avatars/1/original/me.png'
       end
 
       it "builds its url from a pattern if there's one" do
