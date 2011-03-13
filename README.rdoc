@@ -1,0 +1,10 @@
+= Adrift
+
+Adrift is a DIY library to ease attaching files to a model.
+
+It currently works only with ActiveRecord and DataMapper within Rails
+or Sinatra, but it should be pretty adaptable to another environment.
+
+== License
+
+Adrift is released under MIT license.  See LICENSE.
