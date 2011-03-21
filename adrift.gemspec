@@ -8,7 +8,7 @@ Gem::Specification.new do |s|
   s.platform    = Gem::Platform::RUBY
   s.authors     = ["Gabriel Andretta"]
   s.email       = ["ohhgabriel@gmail.com"]
-  s.homepage    = ""
+  s.homepage    = "http://github.com/ohhgabriel/adrift"
   s.summary     = "DIY library to ease attaching files to a model"
   s.description = "DIY library to ease attaching files to a model"
 
