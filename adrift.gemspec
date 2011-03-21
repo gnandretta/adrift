@@ -9,8 +9,8 @@ Gem::Specification.new do |s|
   s.authors     = ["Gabriel Andretta"]
   s.email       = ["ohhgabriel@gmail.com"]
   s.homepage    = ""
-  s.summary     = "Simplistic attachment management"
-  s.description = "Simplistic attachment management"
+  s.summary     = "DIY library to ease attaching files to a model"
+  s.description = "DIY library to ease attaching files to a model"
 
   s.rubyforge_project = "adrift"
 
