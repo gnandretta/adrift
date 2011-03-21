@@ -9,7 +9,12 @@ require 'cucumber/rake/task'
 Cucumber::Rake::Task.new(:features)
 
 require 'rdoc/task'
-RDoc::Task.new do |rdoc|
+rdoc_task_names = {
+  rdoc: 'rdoc',
+  clobber_rdoc: 'rdoc:clean',
+  rerdoc: 'rdoc:force'
+}
+RDoc::Task.new(rdoc_task_names) do |rdoc|
   rdoc.rdoc_dir = 'doc'
   rdoc.title    = 'Adrift'
   rdoc.main     = 'README.rdoc'
