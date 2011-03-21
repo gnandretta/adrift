@@ -1,9 +1,195 @@
 = Adrift
 
-Adrift is a DIY library to ease attaching files to a model.
+Adrift is a DIY library to ease attaching files to a model by making
+them behave just like any other attribute.
 
 It currently works only with ActiveRecord and DataMapper within Rails
 or Sinatra, but it should be pretty adaptable to another environment.
+
+
+== Installation
+
+Install it as any other gem:
+
+    $ gem install adrift
+
+Or, if you are using Bundler, put the following in your Gemfile:
+
+    gem 'adrift'
+
+If you want to create thumbnails, you'll also need to install
+{ImageMagick}[http://www.imagemagick.org].
+
+
+== Usage
+
+The easiest way to use Adrift is to call +attachment+ in your model
+class definition after you require it as follows:
+
+    # remember to require your ORM library before Adrift
+    require 'adrift'
+    require 'adrift/integration'
+
+See the +attachment+ documentation in the module named after you ORM
+library located under Adrift::Integration (for instance,
+Adrift::Integration::DataMapper#attachment for DataMapper).
+This method allow to configure the behaviour of the Attachment it
+defines.  However, if your attachments share a lot of configuration
+you can (and probably should!) change the default options with
+Adrift::Attachment.config.
+
+Adrift only allows to store the attached files in the filesystem and
+provides a simple wrapper around ImageMagick to create thumbnails.  If
+you have different needs you can provide your own *storage* (who
+handles saving and removing the attached files) and/or *processor*
+(who handles handles transforming the attached files or creating new
+ones from them) objects like this:
+
+    # for every Attachment object
+    Adrift::Attachment.config do
+      storage:   Proc.new { MyOwnStorage.new },
+      processor: Proc.new { MyOwnProcessor.new }
+    end
+
+    # just for this one
+    Adrift::Attachment.new :avatar,
+      storage:   Proc.new { MyOwnStorage.new },
+      processor: Proc.new { MyOwnProcessor.new }
+
+See the Adrift::Storage and Adrift::Processor documentation for the
+interface your storage and processor objects need to satisfy.
+Additionally, you can take a look at Adrift::Storage::Filesystem and
+Adrift::Processor::Thumbnail for example implementations.
+
+
+=== Getting started with Sinatra and DataMapper
+
+In +app.rb+:
+
+    require 'sinatra'
+    require 'dm-core'
+    require 'dm-migrations'
+
+    # require Adrift after DataMapper
+    require 'adrift'
+    require 'adrift/integration'
+
+    DataMapper.setup(:default, "sqlite3://#{settings.root}/development.sqlite3")
+
+    class User
+      include DataMapper::Resource
+
+      property :id,              Serial
+      property :name,            String
+      property :avatar_filename, String
+
+      # when defining attachments, beware that a String property to
+      # store the attached file's name is needed for every one.
+      # this property is named after the attachment, in this case,
+      # :avatar_filename after :avatar.
+      attachment :avatar, styles: { thumb: '50x50' }
+    end
+
+    DataMapper.finalize
+    DataMapper.auto_migrate!
+
+    get '/users' do
+      @users = User.all
+      erb :users
+    end
+
+    get '/users/new' do
+      @user = User.new
+      erb :new_user
+    end
+
+    post '/users' do
+      @user = User.create(params[:user])
+      redirect '/users'
+    end
+
+In +views/users.erb+:
+
+    <ul>
+      <% @users.each do |user| %>
+        <li>
+          <a href="<%= user.avatar.url %>">
+            <img src="<%= user.avatar.url(:thumb) %>" alt="<%= user.name %>" />
+          </a>
+        </li>
+      <% end %>
+    </ul>
+
+In +views/new_user.erb+:
+
+    <form action="/users" method="post" enctype="multipart/form-data">
+      <label for="user_name">Name</label>
+      <input type="text" id="user_name" name="user[name]" />
+
+      <label for="user_avatar">Avatar</label>
+      <input type="file" id="user_avatar" name="user[avatar]" />
+
+      <input type="submit" />
+    </form>
+
+
+=== Getting started with Rails and ActiveRecord
+
+Create a new application, add the gem to the Gemfile and then run:
+
+    $ script/rails generate scaffold user name:string avatar_filename:string
+    $ rake db:migrate
+
+Then, modify +app/models/user.rb+ to look like:
+
+    class User < ActiveRecord::Base
+      # when defining attachments, beware that a string column to
+      # store the attached file's name is needed for every one.
+      # this property is named after the attachment, in this case,
+      # :avatar_filename after :avatar.
+      attachment :avatar, styles: { thumb: '50x50' }
+    end
+
+And +app/controllers/users_controller.rb+:
+
+    class UsersController < ApplicationController
+      def index
+        @users = User.all
+      end
+
+      def new
+        @user = User.new
+      end
+
+      def create
+        @user = User.create(params[:user])
+        redirect_to users_url
+      end
+    end
+
+And +app/views/users/index.html.erb+:
+
+    <ul>
+      <% @users.each do |user| %>
+        <li>
+          <%= link_to(
+                image_tag(user.avatar.url(:thumb), alt: user.name),
+                user.avatar.url
+              ) %>
+        </li>
+      <% end %>
+    </ul>
+
+And +app/views/users/_form.html.erb+:
+
+    <%= form_for(@user, html: { multipart: true }) do |f| %>
+      <%= f.label :name %>
+      <%= f.text_field :name %>
+      <%= f.label :avatar %>
+      <%= f.file_field :avatar %>
+      <%= f.submit %>
+    <% end %>
+
 
 == License
 
