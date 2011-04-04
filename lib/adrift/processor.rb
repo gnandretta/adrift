@@ -1,3 +1,5 @@
+require 'tmpdir'
+
 module Adrift
   # Namespace containing the procesor objects used by Attachment.
   #
@@ -71,7 +73,7 @@ module Adrift
         @processed_files.clear
         styles.each do |name, definition|
           thumbnail_path = File.join(
-            File.dirname(image_path),
+            Dir.tmpdir,
             "#{name}-#{File.basename(image_path)}"
           )
           @cli.run(image_path, thumbnail_path, options_for(definition))

@@ -51,6 +51,11 @@ module Adrift
           processor.process('/tmp/123', :small => '50x50!', :normal => '100x100')
         end
 
+        it "creates the thumbnails in /tmp even if the original file isn't there" do
+          processor.process('/some/random/path/123', :normal => '100x100')
+          processor.processed_files.should == {  :normal => '/tmp/normal-123' }
+        end
+
         it "crops the image when the style definition ends with '#'" do
           cli.should_receive(:run).with('/tmp/123', '/tmp/small-123', :resize => '50x50^', :gravity => 'center', :background => 'None', :extent => '50x50')
           processor.process('/tmp/123', :small => '50x50#')
