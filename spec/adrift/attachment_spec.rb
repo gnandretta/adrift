@@ -1,4 +1,5 @@
 require 'spec_helper'
+require 'tmpdir'
 
 module Adrift
   shared_examples_for "any attachment" do
@@ -78,19 +79,19 @@ module Adrift
         before do
           attachment.styles = { :normal => '100x100', :small => '50x50' }
           attachment.path = '/:class_name/:id/:style/:filename'
-          attachment.assign up_file_double(:original_filename => 'new_me.png', :path => '/tmp/123')
+          attachment.assign up_file_double(:original_filename => 'new_me.png', :path => '/path/to/123')
         end
 
         it "process the assigned file" do
-          attachment.processor.should_receive(:process).with('/tmp/123', attachment.styles)
+          attachment.processor.should_receive(:process).with('/path/to/123', attachment.styles)
           attachment.save
         end
 
         it "stores the assigned file and the processed ones" do
           attachment.save
-          attachment.storage.stored.should include(['/tmp/123', '/users/1/original/new_me.png'])
-          attachment.storage.stored.should include(['/tmp/normal-123', '/users/1/normal/new_me.png'])
-          attachment.storage.stored.should include(['/tmp/small-123', '/users/1/small/new_me.png'])
+          attachment.storage.stored.should include(['/path/to/123', '/users/1/original/new_me.png'])
+          attachment.storage.stored.should include(["#{Dir.tmpdir}/normal-123", '/users/1/normal/new_me.png'])
+          attachment.storage.stored.should include(["#{Dir.tmpdir}/small-123", '/users/1/small/new_me.png'])
           attachment.storage.stored.size.should == 3
         end
 
@@ -101,11 +102,11 @@ module Adrift
           end
 
           it "doesn't store the uploaded file" do
-            attachment.storage.stored.should_not include(['/tmp/123', '/users/1/original/new_me.png'])
+            attachment.storage.stored.should_not include(['/path/to/123', '/users/1/original/new_me.png'])
           end
 
           it "stores the processed one" do
-            attachment.storage.stored.should include(['/tmp/original-123', '/users/1/original/new_me.png'])
+            attachment.storage.stored.should include(["#{Dir.tmpdir}/original-123", '/users/1/original/new_me.png'])
           end
         end
       end
@@ -114,15 +115,15 @@ module Adrift
         before do
           attachment.styles = { :normal => '100x100', :small => '50x50' }
           attachment.path = '/:class_name/:id/:style/:filename'
-          attachment.assign up_file_double(:original_filename => 'first_me.png', :path => '/tmp/123')
-          attachment.assign up_file_double(:original_filename => 'second_me.png', :path => '/tmp/456')
+          attachment.assign up_file_double(:original_filename => 'first_me.png', :path => '/path/to/123')
+          attachment.assign up_file_double(:original_filename => 'second_me.png', :path => '/path/to/456')
           attachment.save
         end
 
         it "stores and process only the second assigned file" do
-          attachment.storage.stored.should include(['/tmp/456', '/users/1/original/second_me.png'])
-          attachment.storage.stored.should include(['/tmp/normal-456', '/users/1/normal/second_me.png'])
-          attachment.storage.stored.should include(['/tmp/small-456', '/users/1/small/second_me.png'])
+          attachment.storage.stored.should include(['/path/to/456', '/users/1/original/second_me.png'])
+          attachment.storage.stored.should include(["#{Dir.tmpdir}/normal-456", '/users/1/normal/second_me.png'])
+          attachment.storage.stored.should include(["#{Dir.tmpdir}/small-456", '/users/1/small/second_me.png'])
           attachment.storage.stored.size.should == 3
         end
 
@@ -150,7 +151,7 @@ module Adrift
           before do
             attachment.styles = { :normal => '100x100', :small => '50x50' }
             attachment.path = '/:class_name/:id/:style/:filename'
-            attachment.assign up_file_double(:original_filename => 'new_me.png', :path => '/tmp/123')
+            attachment.assign up_file_double(:original_filename => 'new_me.png', :path => '/path/to/123')
             attachment.destroy
           end
 
@@ -419,7 +420,7 @@ module Adrift
         before do
           attachment.styles = { :normal => '100x100', :small => '50x50' }
           attachment.path = '/:class_name/:id/:style/:filename'
-          attachment.assign up_file_double(:original_filename => 'new_me.png', :path => '/tmp/123')
+          attachment.assign up_file_double(:original_filename => 'new_me.png', :path => '/path/to/123')
           attachment.save
         end
 
@@ -472,7 +473,7 @@ module Adrift
         before do
           attachment.styles = { :normal => '100x100', :small => '50x50' }
           attachment.path = '/:class_name/:id/:style/:filename'
-          attachment.assign up_file_double(:original_filename => 'new_me.png', :path => '/tmp/123')
+          attachment.assign up_file_double(:original_filename => 'new_me.png', :path => '/path/to/123')
           attachment.destroy
         end
 

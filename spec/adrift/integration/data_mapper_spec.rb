@@ -2,7 +2,7 @@ require 'spec_helper'
 
 module Adrift::Integration
   describe DataMapper do
-    it_behaves_like Adrift::Integration::Base do
+    it_behaves_like 'Adrift::Integration::Base' do
       before { klass.stub(after: nil, before:  nil) }
 
       describe ".attachment" do

@@ -1,4 +1,4 @@
-shared_examples_for Adrift::Integration::Base do
+shared_examples_for 'Adrift::Integration::Base' do
   let(:instance) { klass.new }
   let(:klass) do
     Class.new.tap do |klass|

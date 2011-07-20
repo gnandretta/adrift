@@ -2,7 +2,7 @@ require 'spec_helper'
 
 module Adrift::Integration
   describe ActiveRecord do
-    it_behaves_like Adrift::Integration::Base do
+    it_behaves_like 'Adrift::Integration::Base' do
       before { klass.stub(after_save: nil, before_destroy: nil) }
 
       describe ".attachment" do
